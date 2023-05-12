@@ -19,6 +19,5 @@ class MaskListNode(AnimationNode, bpy.types.Node):
     def execute(self, inList, mask):
         if len(inList) == len(mask):
             return maskList(self.assignedType, inList, mask)
-        else:
-            _mask = mask.repeated(length = len(inList), default = True)
-            return maskList(self.assignedType, inList, _mask)
+        _mask = mask.repeated(length = len(inList), default = True)
+        return maskList(self.assignedType, inList, _mask)

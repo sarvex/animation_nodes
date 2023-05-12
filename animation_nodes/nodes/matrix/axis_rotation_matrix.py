@@ -37,11 +37,10 @@ class AxisRotationMatrixNode(AnimationNode, bpy.types.Node):
     def getExecutionCode(self, required):
         if self.useList:
             yield "matrices = self.execute_List(angles)"
+        elif self.useDegree:
+            yield f"matrix = Matrix.Rotation(angle / 180 * math.pi, 4, '{self.axis}')"
         else:
-            if self.useDegree:
-                yield "matrix = Matrix.Rotation(angle / 180 * math.pi, 4, '{}')".format(self.axis)
-            else:
-                yield "matrix = Matrix.Rotation(angle, 4, '{}')".format(self.axis)
+            yield f"matrix = Matrix.Rotation(angle, 4, '{self.axis}')"
 
     def execute_List(self, angles):
         return createAxisRotations(angles, self.axis, self.useDegree)

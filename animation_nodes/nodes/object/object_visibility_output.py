@@ -53,5 +53,5 @@ class ObjectVisibilityOutputNode(AnimationNode, bpy.types.Node):
         yield "if object is not None:"
         for name, _, attr, _ in attributes:
             if self.inputs[name].isUsed:
-                yield "    object.keyframe_insert('{}')".format(attr)
+                yield f"    object.keyframe_insert('{attr}')"
         yield "    pass"

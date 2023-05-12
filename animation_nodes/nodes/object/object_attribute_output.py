@@ -56,9 +56,9 @@ class ObjectAttributeOutputNode(AnimationNode, bpy.types.Node):
                 yield "    for object, value in zip(objects, _values):"
             else:
                 yield "    for object in objects:"
-            yield "        " + code
+            yield f"        {code}"
         else:
-            yield "    " + code
+            yield f"    {code}"
         yield "except AttributeError:"
         yield "    if object: self.setErrorMessage('Attribute not found')"
         yield "except KeyError:"
@@ -73,8 +73,10 @@ class ObjectAttributeOutputNode(AnimationNode, bpy.types.Node):
 
     @property
     def evaluationExpression(self):
-        if self.attribute.startswith("["): return "object" + self.attribute + " = value"
-        else: return "object." + self.attribute + " = value"
+        if self.attribute.startswith("["):
+            return f"object{self.attribute} = value"
+        else:else
+            return f"object.{self.attribute} = value"
 
     def getBakeCode(self):
         if not isCodeValid(self.attribute): return
@@ -83,5 +85,5 @@ class ObjectAttributeOutputNode(AnimationNode, bpy.types.Node):
             yield "    if object is None: continue"
         else:
             yield "if object is not None:"
-        yield "    try: object.keyframe_insert({})".format(repr(self.attribute))
+        yield f"    try: object.keyframe_insert({repr(self.attribute)})"
         yield "    except: pass"

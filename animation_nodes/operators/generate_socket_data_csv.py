@@ -10,10 +10,11 @@ class GenerateSocketDataCSV(bpy.types.Operator):
         sockets.sort(key = lambda x: x.dataType)
         output = []
         for socket in sockets:
-            data = []
-            data.append(socket.dataType)
-            data.append("``{}``".format(socket.bl_idname))
-            data.append("Yes" if isBase(socket.bl_idname) else "No")
+            data = [
+                socket.dataType,
+                f"``{socket.bl_idname}``",
+                "Yes" if isBase(socket.bl_idname) else "No",
+            ]
             output.append(", ".join(data))
 
         text = bpy.data.texts.get("Socket Data.cvs")

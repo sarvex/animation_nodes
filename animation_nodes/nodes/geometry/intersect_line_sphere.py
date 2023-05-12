@@ -57,10 +57,7 @@ class IntersectLineSphereNode(AnimationNode, bpy.types.Node):
     def getExecutionFunctionName(self):
         useList = any((self.useLineStartList, self.useLineEndList,
                        self.useSphereCenterList, self.useSphereRadiusList))
-        if useList:
-            return "execute_List"
-        else:
-            return "execute_Single"
+        return "execute_List" if useList else "execute_Single"
 
     def execute_List(self, lineStarts, lineEnds, sphereCenters, sphereRadii):
         lineStarts = VirtualVector3DList.create(lineStarts, Vector((0, 0, 0)))

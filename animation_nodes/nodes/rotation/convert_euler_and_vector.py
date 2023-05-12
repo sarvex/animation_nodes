@@ -47,17 +47,22 @@ class ConvertVectorAndEulerNode(AnimationNode, bpy.types.Node):
 
     def getExecutionCode(self, required):
         if self.useList:
-            if self.conversionType == "VECTOR_TO_EULER":
-                return "eulers = self.vectorsToEulers(vectors)"
-            elif self.conversionType == "EULER_TO_VECTOR":
+            if self.conversionType == "EULER_TO_VECTOR":
                 return "vectors = self.eulersToVectors(eulers)"
-        else:
-            if self.conversionType == "VECTOR_TO_EULER":
-                if self.useDegree: return "euler = Euler(vector / 180 * math.pi, 'XYZ')"
-                else: return "euler = Euler(vector, 'XYZ')"
-            elif self.conversionType == "EULER_TO_VECTOR":
-                if self.useDegree: return "vector = Vector(euler) * 180 / math.pi"
-                else: return "vector = Vector(euler)"
+            elif self.conversionType == "VECTOR_TO_EULER":
+                return "eulers = self.vectorsToEulers(vectors)"
+        elif self.conversionType == "EULER_TO_VECTOR":
+            return (
+                "vector = Vector(euler) * 180 / math.pi"
+                if self.useDegree
+                else "vector = Vector(euler)"
+            )
+        elif self.conversionType == "VECTOR_TO_EULER":
+            return (
+                "euler = Euler(vector / 180 * math.pi, 'XYZ')"
+                if self.useDegree
+                else "euler = Euler(vector, 'XYZ')"
+            )
 
     def vectorsToEulers(self, vectors):
         return vectorsToEulers(vectors, self.useDegree)

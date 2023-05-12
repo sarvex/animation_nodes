@@ -39,5 +39,7 @@ class GPFrameFromStrokesNode(AnimationNode, bpy.types.Node):
         if len(np.unique(frameNumbers.asNumpyArray())) != len(frameNumbers):
             self.raiseErrorMessage("Some Frame Numbers are repeated.")
 
-        frames = [GPFrame([stroke], number) for stroke, number in zip(strokes, frameNumbers)]
-        return frames
+        return [
+            GPFrame([stroke], number)
+            for stroke, number in zip(strokes, frameNumbers)
+        ]

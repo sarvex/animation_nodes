@@ -20,9 +20,11 @@ class ReassignLoopParameterNode(AnimationNode, bpy.types.Node):
     parameterDataType: StringProperty()
 
     def draw(self, layout):
-        socket = self.linkedParameterSocket
-        if socket:
-            layout.label(text = "{} > {}".format(repr(socket.node.subprogramName), socket.text), icon = "GROUP_VERTEX")
+        if socket := self.linkedParameterSocket:
+            layout.label(
+                text=f"{repr(socket.node.subprogramName)} > {socket.text}",
+                icon="GROUP_VERTEX",
+            )
         else:
             layout.label(text = "Target does not exist", icon = "ERROR")
 

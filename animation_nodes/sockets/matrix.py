@@ -23,9 +23,8 @@ class MatrixSocket(bpy.types.NodeSocket, AnimationNodeSocket):
     def correctValue(cls, value):
         if isinstance(value, Matrix):
             return value, 0
-        else:
-            try: return Matrix(value), 1
-            except: return cls.getDefaultValue(), 2
+        try: return Matrix(value), 1
+        except: return cls.getDefaultValue(), 2
 
 
 class MatrixListSocket(bpy.types.NodeSocket, CListSocket):

@@ -58,7 +58,7 @@ class ParticleSystemParticlesDataNode(AnimationNode, bpy.types.Node):
 
         for identifier, attribute, CListType in executionData:
             if identifier in required:
-                yield "{} = {}()".format(identifier, CListType.__name__)
+                yield f"{identifier} = {CListType.__name__}()"
 
         yield "for system in particleSystems:"
         yield "    if system is None: continue"
@@ -66,16 +66,16 @@ class ParticleSystemParticlesDataNode(AnimationNode, bpy.types.Node):
 
         yield "    _mask = self.getParticlesMask(system.particles)"
         for identifier, attribute, CListType in executionData:
-            if not identifier in required: continue
-            yield "    values = self.getParticleProperties(system, '{}', {}, _mask)".format(attribute, CListType.__name__)
-            yield "    {}.extend(values)".format(identifier)
+            if identifier not in required: continue
+            yield f"    values = self.getParticleProperties(system, '{attribute}', {CListType.__name__}, _mask)"
+            yield f"    {identifier}.extend(values)"
 
         for identifier, attribute, CListType in executionData:
             if identifier in required:
                 # Correct particle rotations.
                 if attribute == "rotation":
                     yield "{0} = AN.nodes.particles.c_utils.correctParticleRotations({0})".format(identifier)
-                
+
                 # Convert FloatList to DoubleList.
                 if CListType is FloatList:
                     yield "{0} = DoubleList.fromValues({0})".format(identifier)

@@ -23,7 +23,7 @@ class SelectArea(bpy.types.Operator):
         self.drawHandlers = []
         for area in iterAreas():
             space = area.spaces.active
-            regionTypes = set(region.type for region in area.regions if region.type != "")
+            regionTypes = {region.type for region in area.regions if region.type != ""}
             for regionType in regionTypes:
                 handler = space.draw_handler_add(self.drawCallback, tuple(), regionType, "POST_PIXEL")
                 self.drawHandlers.append((space, handler, regionType))
@@ -192,15 +192,9 @@ def calcUserSelectionInArea(area, point):
         return "CENTER", 0.0
 
     if yFactor > xFactor:
-        if 1 - yFactor > xFactor:
-            return "LEFT", xFactor
-        else:
-            return "TOP", yFactor
+        return ("LEFT", xFactor) if 1 - yFactor > xFactor else ("TOP", yFactor)
     else:
-        if 1 - yFactor > xFactor:
-            return "BOTTOM", yFactor
-        else:
-            return "RIGHT", xFactor
+        return ("BOTTOM", yFactor) if 1 - yFactor > xFactor else ("RIGHT", xFactor)
 
 def isPointInArea(area, point):
     return area.x < point.x < area.x + area.width and area.y < point.y < area.y + area.height

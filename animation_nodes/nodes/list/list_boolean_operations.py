@@ -53,18 +53,16 @@ class ListBooleanOperationsNode(AnimationNode, bpy.types.Node):
         outList = self.getEmptyStartList()
         append = outList.append
         for element in list1:
-            if element not in outList:
-                if element in list2:
-                    append(element)
+            if element not in outList and element in list2:
+                append(element)
         return outList
 
     def execute_Difference(self, list1, list2):
         outList = self.getEmptyStartList()
         append = outList.append
         for element in list1:
-            if element not in outList:
-                if element not in list2:
-                    append(element)
+            if element not in outList and element not in list2:
+                append(element)
         return outList
 
     def execute_SymmetricDifference(self, list1, list2):
@@ -73,13 +71,11 @@ class ListBooleanOperationsNode(AnimationNode, bpy.types.Node):
         outList = self.getEmptyStartList()
         append = outList.append
         for element in list1:
-            if element not in outList:
-                if element not in list2:
-                    append(element)
+            if element not in outList and element not in list2:
+                append(element)
         for element in list2:
-            if element not in outList:
-                if element not in list1:
-                    append(element)
+            if element not in outList and element not in list1:
+                append(element)
         return outList
 
     def getEmptyStartList(self):

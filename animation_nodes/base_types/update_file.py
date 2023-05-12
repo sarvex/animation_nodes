@@ -64,9 +64,9 @@ def removeUndefinedSockets():
 
 def removeSocket(sockets, socket):
     print("WARNING: socket removed")
-    print("    Tree: {}".format(repr(socket.id_data.name)))
-    print("    Node: {}".format(repr(socket.node.name)))
-    print("    Name: {}".format(repr(socket.name)))
+    print(f"    Tree: {repr(socket.id_data.name)}")
+    print(f"    Node: {repr(socket.node.name)}")
+    print(f"    Name: {repr(socket.name)}")
     sockets.remove(socket)
 
 
@@ -106,10 +106,15 @@ def setSocketInfo(socket, data):
 def getLinks():
     linksByTree = {}
     for tree in getAnimationNodeTrees():
-        links = []
-        for link in tree.links:
-            links.append((link.from_node, link.from_socket.identifier,
-                          link.to_node, link.to_socket.identifier))
+        links = [
+            (
+                link.from_node,
+                link.from_socket.identifier,
+                link.to_node,
+                link.to_socket.identifier,
+            )
+            for link in tree.links
+        ]
         linksByTree[tree] = links
     return linksByTree
 
@@ -126,9 +131,9 @@ def setLinks(linksByTree):
                 tree.links.new(toSocket, fromSocket)
             else:
                 print("WARNING: link removed")
-                print("    Tree: {}".format(repr(tree.name)))
-                print("    From Socket: {} -> {}".format(repr(fromNode.name), repr(fromIdentifier)))
-                print("    To Socket: {} -> {}\n".format(repr(toNode.name), repr(toIdentifier)))
+                print(f"    Tree: {repr(tree.name)}")
+                print(f"    From Socket: {repr(fromNode.name)} -> {repr(fromIdentifier)}")
+                print(f"    To Socket: {repr(toNode.name)} -> {repr(toIdentifier)}\n")
 
 def getSocketByIdentifier(sockets, identifier):
     for socket in sockets:

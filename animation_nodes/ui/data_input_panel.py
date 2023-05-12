@@ -17,12 +17,12 @@ class ViewportInputPanel(bpy.types.Panel):
         if len(nodes) == 0:
             layout.label(text="No Viewport Input node.", icon="INFO")
             return
-        
+
         for node in sorted(nodes, key = attrgetter("orderWeight")):
             box = layout.box()
 
             row = box.row()
-            row.label(text = node.label + ":")
+            row.label(text=f"{node.label}:")
             row.operator("an.toogle_viewport_input_box", text="",
                 icon='TRIA_RIGHT' if node.hidden else 'TRIA_DOWN',
                 emboss = False).identifier = node.identifier

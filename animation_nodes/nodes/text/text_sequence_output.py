@@ -44,14 +44,14 @@ class TextSequenceOutputNode(AnimationNode, bpy.types.Node):
         if align in alignTypes:
             sequence.align_x = align
         else:
-            self.setErrorMessage("X Align must be in " + str(alignTypes))
+            self.setErrorMessage(f"X Align must be in {alignTypes}")
 
     def setYAlignment(self, sequence, align):
         alignTypes = ("TOP", "CENTER", "BOTTOM")
         if align in alignTypes:
             sequence.align_y = align
         else:
-            self.setErrorMessage("Y Align must be in " + str(alignTypes))
+            self.setErrorMessage(f"Y Align must be in {alignTypes}")
 
     def getBakeCode(self):
         yield "if getattr(sequence, 'type', '') == 'TEXT':"

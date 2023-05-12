@@ -73,7 +73,7 @@ class SliceListNode(AnimationNode, bpy.types.Node):
         elements = ["_start" if self.useStart else "",
                     "_end" if self.useEnd else "",
                     "_step" if self.useStep else ""]
-        yield "slicedList = list[{}]".format(":".join(elements))
+        yield f'slicedList = list[{":".join(elements)}]'
 
     def assignListDataType(self, listDataType):
         self.assignType(toBaseDataType(listDataType))

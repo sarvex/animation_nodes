@@ -11,7 +11,7 @@ def toAbsolutePath(path, start = None, library = None):
     return os.path.normpath(absPath)
 
 def toIDPropertyPath(name):
-    return '["' + name + '"]'
+    return f'["{name}"]'
 
 def getResolvedNestedPath(id_block, path):
     blocks = parsePath(path)

@@ -79,8 +79,9 @@ class InterpolationListSocket(bpy.types.NodeSocket, PythonListSocket):
 
     @classmethod
     def correctValue(cls, value):
-        if isinstance(value, list):
-            if all(isinstance(element, Interpolation) for element in value):
-                return value, 0
+        if isinstance(value, list) and all(
+            isinstance(element, Interpolation) for element in value
+        ):
+            return value, 0
         try: return [PyInterpolation(element) for element in value], 1
         except: return cls.getDefaultValue(), 2

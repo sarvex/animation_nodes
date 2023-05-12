@@ -39,7 +39,8 @@ class MIDINoteListSocket(bpy.types.NodeSocket, PythonListSocket):
 
     @classmethod
     def correctValue(cls, value):
-        if isinstance(value, list):
-            if all(isinstance(element, MIDINote) for element in value):
-                return value, 0
+        if isinstance(value, list) and all(
+            isinstance(element, MIDINote) for element in value
+        ):
+            return value, 0
         return cls.getDefaultValue(), 2

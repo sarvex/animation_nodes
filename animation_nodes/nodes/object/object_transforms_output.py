@@ -93,21 +93,21 @@ class ObjectTransformsOutputNode(AnimationNode, bpy.types.Node):
 
         # Location
         if all((*useLoc, )):
-            yield "    object.{} = location".format(self.locationPath)
+            yield f"    object.{self.locationPath} = location"
         else:
             for i in range(3):
                 if useLoc[i]: yield "    object.{0}[{1}] = location[{1}]".format(self.locationPath, i)
 
         # Rotation
         if all((*useRot, )):
-            yield "    object.{} = rotation".format(self.rotationPath)
+            yield f"    object.{self.rotationPath} = rotation"
         else:
             for i in range(3):
                 if useRot[i]: yield "    object.{0}[{1}] = rotation[{1}]".format(self.rotationPath, i)
 
         # Scale
         if all((*useScale, )):
-            yield "    object.{} = scale".format(self.scalePath)
+            yield f"    object.{self.scalePath} = scale"
         else:
             for i in range(3):
                 if useScale[i]: yield "    object.{0}[{1}] = scale[{1}]".format(self.scalePath, i)
@@ -118,15 +118,15 @@ class ObjectTransformsOutputNode(AnimationNode, bpy.types.Node):
 
         for i in range(3):
             if self.useLocation[i]:
-                yield "    object.keyframe_insert('{}', index = {})".format(self.locationPath, i)
+                yield f"    object.keyframe_insert('{self.locationPath}', index = {i})"
 
         for i in range(3):
             if self.useRotation[i]:
-                yield "    object.keyframe_insert('{}', index = {})".format(self.rotationPath, i)
+                yield f"    object.keyframe_insert('{self.rotationPath}', index = {i})"
 
         for i in range(3):
             if self.useScale[i]:
-                yield "    object.keyframe_insert('{}', index = {})".format(self.scalePath, i)
+                yield f"    object.keyframe_insert('{self.scalePath}', index = {i})"
 
     @property
     def locationPath(self):

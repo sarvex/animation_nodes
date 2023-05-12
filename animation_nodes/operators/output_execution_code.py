@@ -49,7 +49,8 @@ def getCurrentExecutionCode(lineNumbers = False):
     return ("\n" * 3).join(codes)
 
 def insertLineNumbers(code):
-    lines = []
-    for i, line in enumerate(code.split("\n")):
-        lines.append("{:3}.  {}".format(i + 1, line))
+    lines = [
+        "{:3}.  {}".format(i + 1, line)
+        for i, line in enumerate(code.split("\n"))
+    ]
     return "\n".join(lines)

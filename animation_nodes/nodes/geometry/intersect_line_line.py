@@ -58,10 +58,7 @@ class IntersectLineLineNode(AnimationNode, bpy.types.Node):
     def getExecutionFunctionName(self):
         useList = any((self.useFirstLineStartList, self.useFirstLineEndList,
                        self.useSecondLineStartList, self.useSecondLineEndList))
-        if useList:
-            return "execute_List"
-        else:
-            return "execute_Single"
+        return "execute_List" if useList else "execute_Single"
 
     def execute_List(self, firstLineStarts, firstLineEnds, secondLineStarts, secondLineEnds):
         starts1, ends1, starts2, ends2 = VirtualVector3DList.createMultiple(

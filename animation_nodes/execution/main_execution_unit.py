@@ -65,8 +65,12 @@ class MainExecutionUnit:
             yield from linkOutputSocketsToTargets(node, variables, nodeByID)
 
     def compileScripts(self):
-        self.setupCodeObject = compileScript(self.setupScript, name = "setup: {}".format(repr(self.network.treeName)))
-        self.executeCodeObject = compileScript(self.executeScript, name = "execution: {}".format(repr(self.network.treeName)))
+        self.setupCodeObject = compileScript(
+            self.setupScript, name=f"setup: {repr(self.network.treeName)}"
+        )
+        self.executeCodeObject = compileScript(
+            self.executeScript, name=f"execution: {repr(self.network.treeName)}"
+        )
 
 
     def raiseNotSetupException(self, *args, **kwargs):

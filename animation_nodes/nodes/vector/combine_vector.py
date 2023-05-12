@@ -26,7 +26,7 @@ class CombineVectorNode(AnimationNode, bpy.types.Node):
         label = "<X, Y, Z>"
         for socket in self.inputs:
             axis = socket.name
-            if not getattr(self, "useList" + axis) and not socket.isLinked:
+            if not getattr(self, f"useList{axis}") and not socket.isLinked:
                 label = label.replace(axis, str(round(socket.value, 4)))
         return label
 

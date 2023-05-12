@@ -58,7 +58,7 @@ class NumberRangeNode(AnimationNode, bpy.types.Node):
                 layout.prop(self, "includeEndPoint")
 
     def drawLabel(self):
-        return self.inputs[1].dataType + " Range"
+        return f"{self.inputs[1].dataType} Range"
 
     def getExecutionFunctionName(self):
         if self.dataType == "Integer":

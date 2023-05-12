@@ -84,7 +84,7 @@ class ComposeMatrixNode(AnimationNode, bpy.types.Node):
     def getExecutionCode(self, required):
         if self.useTranslationList or self.useRotationList or self.useScaleList:
             args = ", ".join(socket.identifier for socket in self.inputs)
-            yield "matrices = self.calculateMatrices({})".format(args)
+            yield f"matrices = self.calculateMatrices({args})"
         else:
             yield from self.getExecutionCode_Single()
 
@@ -134,12 +134,11 @@ class ComposeMatrixNode(AnimationNode, bpy.types.Node):
             matrices = rotationsFromVirtualEulers(amount, rotations)
             if self.useScale:
                 scale3x3Parts(matrices, scales)
+        elif self.useScale:
+            matrices = scalesFromVirtualVectors(amount, scales)
         else:
-            if self.useScale:
-                matrices = scalesFromVirtualVectors(amount, scales)
-            else:
-                identity = Matrix.Identity(4)
-                matrices = Matrix4x4List.fromValue(identity, amount)
+            identity = Matrix.Identity(4)
+            matrices = Matrix4x4List.fromValue(identity, amount)
         if self.useTranslation:
             setLocations(matrices, translations)
 

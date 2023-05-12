@@ -18,7 +18,7 @@ def idToNode(nodeID):
     return bpy.data.node_groups[nodeID[0]].nodes[nodeID[1]]
 
 def createNodeByIdDict():
-    nodeByID = dict()
+    nodeByID = {}
     for tree in getAnimationNodeTrees():
         treeName = tree.name
         for node in tree.nodes:

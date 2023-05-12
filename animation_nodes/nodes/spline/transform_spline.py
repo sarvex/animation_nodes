@@ -24,15 +24,15 @@ class TransformSplineNode(AnimationNode, bpy.types.Node):
 
     def getExecutionFunctionName(self):
         if self.useSplineList:
-            if self.useMatrixList:
-                return "execute_MultipleSpline_MultipleMatrix"
-            else:
-                return "execute_MultipleSpline_SingleMatrix"
+            return (
+                "execute_MultipleSpline_MultipleMatrix"
+                if self.useMatrixList
+                else "execute_MultipleSpline_SingleMatrix"
+            )
+        if self.useMatrixList:
+            return "execute_SingleSpline_MultipleMatrix"
         else:
-            if self.useMatrixList:
-                return "execute_SingleSpline_MultipleMatrix"
-            else:
-                return "execute_SingleSpline_SingleMatrix"
+            return "execute_SingleSpline_SingleMatrix"
 
     def execute_SingleSpline_SingleMatrix(self, spline, matrix):
         spline.transform(matrix)

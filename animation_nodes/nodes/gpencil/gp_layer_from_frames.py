@@ -53,7 +53,7 @@ class GPLayerFromFramesNode(AnimationNode, bpy.types.Node):
             for i, maskLayer in enumerate(maskLayersIn):
                 if maskLayer.isEmptyLayer(): continue
                 maskLayerName = maskLayer.layerName
-                if maskLayerName != "" and maskLayerName != layerName:
+                if maskLayerName not in ["", layerName]:
                     maskLayer.invertAsMask = invertMaskLayers[i]
                     maskLayers.append(maskLayer)
 

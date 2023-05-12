@@ -42,7 +42,7 @@ class MixDataListNode(AnimationNode, bpy.types.Node):
     def getExecutionCode(self, required):
         yield "length = len(dataList)"
         yield "if length > 0:"
-        yield "    f = (factor{}) * (length - 1)".format(" % 1" if self.repeat else "")
+        yield f'    f = (factor{" % 1" if self.repeat else ""}) * (length - 1)'
         yield "    before = dataList[max(min(math.floor(f), length - 1), 0)]"
         yield "    after = dataList[max(min(math.ceil(f), length - 1), 0)]"
         yield "    influence = interpolation(f % 1)"

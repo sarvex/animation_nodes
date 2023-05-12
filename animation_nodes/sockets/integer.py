@@ -49,9 +49,8 @@ class IntegerSocket(bpy.types.NodeSocket, AnimationNodeSocket):
     def correctValue(cls, value):
         if isinstance(value, int):
             return value, 0
-        else:
-            try: return int(value), 1
-            except: return cls.getDefaultValue(), 2
+        try: return int(value), 1
+        except: return cls.getDefaultValue(), 2
 
 registerImplicitConversion("Float", "Integer", "int(value)")
 registerImplicitConversion("Boolean", "Integer", "int(value)")

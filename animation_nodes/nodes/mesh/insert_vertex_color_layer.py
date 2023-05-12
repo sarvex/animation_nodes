@@ -41,10 +41,7 @@ class InsertVertexColorLayerNode(AnimationNode, bpy.types.Node):
             layout.prop(self, "colorMode", text = "")
 
     def getExecutionFunctionName(self):
-        if self.useColorList:
-            return "execute_ColorsList"
-        else:
-            return "execute_SingleColor"
+        return "execute_ColorsList" if self.useColorList else "execute_SingleColor"
 
     def execute_SingleColor(self, mesh, colorLayerName, color):
         self.checkAttributeName(mesh, colorLayerName)

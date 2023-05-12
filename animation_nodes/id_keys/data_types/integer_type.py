@@ -88,11 +88,6 @@ class IDKeysFromSortedObjects(bpy.types.Operator):
             else:
                 layout.prop(self, "locationMode", text = "Location")
                 layout.prop(self, "threshold")
-        elif self.sortMode == "RANDOM":
-            pass
-        elif self.sortMode == "NAME":
-            pass
-
         layout.prop(self, "reverse")
         layout.prop(self, "offset")
 
@@ -100,26 +95,23 @@ class IDKeysFromSortedObjects(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        if self.sortMode == "SELECTION_ORDER":
-            iterSortedObjects = self.sort_SelectionOrder
-        elif self.sortMode == "AXIS":
+        if self.sortMode == "AXIS":
             iterSortedObjects = self.sort_Axis
         elif self.sortMode == "DISTANCE":
             iterSortedObjects = self.sort_Distance
-        elif self.sortMode == "RANDOM":
-            iterSortedObjects = self.sort_Random
         elif self.sortMode == "NAME":
             iterSortedObjects = self.sort_Name
 
+        elif self.sortMode == "RANDOM":
+            iterSortedObjects = self.sort_Random
+        elif self.sortMode == "SELECTION_ORDER":
+            iterSortedObjects = self.sort_SelectionOrder
         sortedObjects = list(iterSortedObjects())
         for i, objects in enumerate(sortedObjects):
             if not isinstance(objects, (list, tuple)):
                 objects = [objects]
             for object in objects:
-                if self.reverse:
-                    index = len(sortedObjects) - i - 1
-                else:
-                    index = i
+                index = len(sortedObjects) - i - 1 if self.reverse else i
                 object.id_keys.set("Integer", self.idKeyName, index + self.offset)
 
         redrawAll()
@@ -156,7 +148,7 @@ class IDKeysFromSortedObjects(bpy.types.Operator):
         threshold = self.threshold
 
         for object in sorted(bpy.context.selected_objects, key = keyFunc):
-            if len(sortedObjects) == 0:
+            if not sortedObjects:
                 sortedObjects.append([object])
             elif abs(keyFunc(sortedObjects[-1][0]) - keyFunc(object)) < threshold:
                 sortedObjects[-1].append(object)

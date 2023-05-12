@@ -48,16 +48,15 @@ class StatisticsDrawer(bpy.types.Operator):
 
         mousePosition = Vector((event.mouse_region_x, event.mouse_region_y))
         if "CTRL" in event.type:
-            if event.value == "PRESS": self.enableViewDrag = True
-            if event.value == "RELEASE": self.enableViewDrag = False
+            if event.value == "PRESS":
+                self.enableViewDrag = True
+            elif event.value == "RELEASE":
+                self.enableViewDrag = False
         if self.enableViewDrag:
             self.drawOffset += mousePosition - self.lastMousePosition
         self.lastMousePosition = mousePosition
 
-        if self.enableViewDrag:
-            return {"RUNNING_MODAL"}
-
-        return {"PASS_THROUGH"}
+        return {"RUNNING_MODAL"} if self.enableViewDrag else {"PASS_THROUGH"}
 
     def finish(self):
         bpy.types.SpaceNodeEditor.draw_handler_remove(self.drawHandler, "WINDOW")
@@ -123,11 +122,14 @@ def createNodeTreeTable(statistics):
     table = Table()
 
     for stats in statistics.nodeTreeStats + [statistics.combinedStats]:
-        table.newRow({
-            "Tree" : stats.name,
-            "Nodes" : "{} / {}".format(stats.functionalNodeAmount, stats.totalNodeAmount),
-            "Links" : stats.totalLinkAmount,
-            "Subprograms" : stats.subprogramAmount})
+        table.newRow(
+            {
+                "Tree": stats.name,
+                "Nodes": f"{stats.functionalNodeAmount} / {stats.totalNodeAmount}",
+                "Links": stats.totalLinkAmount,
+                "Subprograms": stats.subprogramAmount,
+            }
+        )
 
     return table
 

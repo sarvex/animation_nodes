@@ -39,9 +39,8 @@ class RepeatListElementsNode(AnimationNode, bpy.types.Node):
         if self.useList:
             if amounts.containsValueLowerThan(0):
                 self.raiseErrorMessage("The amounts list can not contain a negative amount.")
-        else:
-            if amounts < 0:
-                self.raiseErrorMessage("The amount can not be negative.")
+        elif amounts < 0:
+            self.raiseErrorMessage("The amount can not be negative.")
 
         amounts = VirtualLongList.create(amounts, 0).materialize(len(inList))
         return repeatElements(self.assignedType, inList, amounts, self.makeElementCopies)

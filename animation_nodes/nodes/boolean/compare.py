@@ -57,8 +57,7 @@ class CompareNode(AnimationNode, bpy.types.Node):
         if type == "A>B":	    return "try: result = a > b \nexcept: result = False"
         if type == "A>=B":    return "try: result = a >= b \nexcept: result = False"
         if type == "A_IS_B":    return "result = a is b"
-        if type == "A_IS_NONE": return "result = a is None"
-        return "result = False"
+        return "result = a is None" if type == "A_IS_NONE" else "result = False"
 
     def assignType(self, dataType):
         if self.assignedType != dataType:

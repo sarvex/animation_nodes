@@ -34,7 +34,7 @@ def findIDKeysInCurrentFile():
             unremovableKeys.update(keys)
 
     # default keys should stay in order
-    allKeys = list()
+    allKeys = []
     allKeys.extend(defaultIDKeys)
     unremovableKeys.update(defaultIDKeys)
     for key in foundKeys:

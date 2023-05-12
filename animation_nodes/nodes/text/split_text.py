@@ -54,14 +54,17 @@ class SplitTextNode(AnimationNode, bpy.types.Node):
         yield "length = len(textList)"
 
     def splitWithRegularExpression(self, text, splitBy):
-        if splitBy == "": return [text]
-        else:
-            try:
-                if self.keepDelimiters: return re.split("("+splitBy+")", text)
-                else: return re.split(splitBy, text)
-            except:
-                self.setErrorMessage("Invalid Regular Expression")
-                return [text]
+        if splitBy == "":
+            if splitBy == "": return [text]
+        try:
+            return (
+                re.split(f"({splitBy})", text)
+                if self.keepDelimiters
+                else re.split(splitBy, text)
+            )
+        except:
+            self.setErrorMessage("Invalid Regular Expression")
+            return [text]
 
     def splitEveryNCharacters(self, text, n):
         if n <= 0: return []

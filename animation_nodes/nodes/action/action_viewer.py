@@ -16,9 +16,7 @@ class ActionViewerNode(AnimationNode, bpy.types.Node):
         a = action
 
     def getUIExtensions(self):
-        if a is None:
-            return []
-        return [ActionUIExtension(a)]
+        return [] if a is None else [ActionUIExtension(a)]
 
 
 class ActionUIExtension(NodeUIExtension):
@@ -54,8 +52,9 @@ class FrameRangeRectangle(Rectangle):
         self.endFrame = endFrame
 
     def copy(self):
-        rec = FrameRangeRectangle(self.x1, self.y1, self.x2, self.y2, self.startFrame, self.endFrame)
-        return rec
+        return FrameRangeRectangle(
+            self.x1, self.y1, self.x2, self.y2, self.startFrame, self.endFrame
+        )
 
     def getClampedSubFrameRange(self, start, end):
         return self.getFrameRange(self.clampFrame(start), self.clampFrame(end))

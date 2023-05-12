@@ -33,12 +33,16 @@ class BooleanListLogicNode(AnimationNode, bpy.types.Node):
         t = self.compareType
 
         yield "if len(inList) > 0:"
-        if t == "ALL_TRUE":        yield "    result = inList.allTrue()"
-        elif t == "ALL_FALSE":     yield "    result = inList.allFalse()"
-        elif t == "NOT_ALL_TRUE":  yield "    result = not inList.allTrue()"
-        elif t == "NOT_ALL_FALSE": yield "    result = not inList.allFalse()"
+        if t == "ALL_FALSE":
+            yield "    result = inList.allFalse()"
+        elif t == "ALL_TRUE":
+            if t == "ALL_TRUE":        yield "    result = inList.allTrue()"
+        elif t == "NOT_ALL_FALSE":
+            yield "    result = not inList.allFalse()"
+        elif t == "NOT_ALL_TRUE":
+            yield "    result = not inList.allTrue()"
         yield "else:"
-        if t == "ALL_TRUE":        yield "    result = True"
-        elif t == "ALL_FALSE":     yield "    result = True"
-        elif t == "NOT_ALL_TRUE":  yield "    result = False"
-        elif t == "NOT_ALL_FALSE": yield "    result = False"
+        if t in ["ALL_TRUE", "ALL_FALSE"]:
+            if t == "ALL_TRUE":        yield "    result = True"
+        elif t in ["NOT_ALL_TRUE", "NOT_ALL_FALSE"]:
+            yield "    result = False"

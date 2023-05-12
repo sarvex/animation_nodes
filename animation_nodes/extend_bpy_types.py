@@ -155,11 +155,9 @@ class ObjectProperties(bpy.types.PropertyGroup):
 
         if not applyModifiers and object.type == "MESH":
             return object.data
-        else:
-            try:
-                if applyModifiers: return getEvaluatedID(object).to_mesh()
-                else: return object.to_mesh()
-            except: return None
+        try:
+            return getEvaluatedID(object).to_mesh() if applyModifiers else object.to_mesh()
+        except: return None
 
     def getCurve(self, applyModifiers = False):
         bObject = self.id_data

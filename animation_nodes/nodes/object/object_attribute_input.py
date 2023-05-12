@@ -38,7 +38,7 @@ class ObjectAttributeInputNode(AnimationNode, bpy.types.Node):
         yield "try:"
         if self.evaluateObject:
             yield "    evaluatedObject = AN.utils.depsgraph.getEvaluatedID(object)"
-        yield "    " + code
+        yield f"    {code}"
         yield "except:"
         yield "    if object: self.setErrorMessage('Attribute not found')"
         yield "    value = None"
@@ -46,9 +46,9 @@ class ObjectAttributeInputNode(AnimationNode, bpy.types.Node):
     @property
     def evaluationExpression(self):
         if self.attribute.startswith("["):
-            return f"value = {self.getAttributeSource()}" + self.attribute
+            return f"value = {self.getAttributeSource()}{self.attribute}"
         else:
-            return f"value = {self.getAttributeSource()}." + self.attribute
+            return f"value = {self.getAttributeSource()}.{self.attribute}"
 
     def getAttributeSource(self):
         return "evaluatedObject" if self.evaluateObject else "object"

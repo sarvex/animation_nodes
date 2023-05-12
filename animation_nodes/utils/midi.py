@@ -38,7 +38,8 @@ class TempoMap:
 
     def computeTempoTracks(self, midiFile):
         tracks = midiFile.tracks
-        if midiFile.midiFormat == 1: tracks = tracks[0:1]
+        if midiFile.midiFormat == 1:
+            tracks = tracks[:1]
         self.tempoTracks = [[] * len(tracks)]
         for trackIndex, track in enumerate(tracks):
             timeInTicks = 0
@@ -79,7 +80,7 @@ class TrackState:
     def __init__(self):
         self.timeInTicks = 0
         self.timeInSeconds = 0
-        self.noteOnTable = dict()
+        self.noteOnTable = {}
 
     def updateTime(self, trackIndex, tempoMap, deltaTime):
         self.timeInTicks += deltaTime

@@ -19,15 +19,12 @@ class LampInputNode(AnimationNode, bpy.types.Node):
             ("Energy", "energy"), ("Energies", "energies")))
 
     def getExecutionFunctionName(self):
-        if self.useObjectList:
-            return "execute_List"
-        else:
-            return "execute_Single"
+        return "execute_List" if self.useObjectList else "execute_Single"
 
     def execute_Single(self, object):
         if object is None or object.type != 'LIGHT': return Color((0, 0, 0, 0)), 0
         color = object.data.color
-        return Color(tuple([color[0], color[1], color[2], 0])), object.data.energy
+        return Color((color[0], color[1], color[2], 0)), object.data.energy
 
     def execute_List(self, objects):
         amount = len(objects)

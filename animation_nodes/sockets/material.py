@@ -57,7 +57,8 @@ class MaterialListSocket(bpy.types.NodeSocket, PythonListSocket):
 
     @classmethod
     def correctValue(cls, value):
-        if isinstance(value, list):
-            if all(isinstance(element, Material) or element is None for element in value):
-                return value, 0
+        if isinstance(value, list) and all(
+            isinstance(element, Material) or element is None for element in value
+        ):
+            return value, 0
         return cls.getDefaultValue(), 2

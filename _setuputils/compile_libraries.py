@@ -7,10 +7,10 @@ def execute_CompileLibraries(setupInfoList, addonDirectory):
         task(Utils)
 
 def iterLibraryCompilationTasks(setupInfoList):
+    fName = "getCompileLibraryTasks"
     for path in iterLibraryCompilationProviders(setupInfoList):
         obj = executePythonFile(path)
-        fName = "getCompileLibraryTasks"
-        if not fName in obj:
+        if fName not in obj:
             raise Exception("File does not contain '{}' function:\n  {}".formaT(fName, path))
         yield from obj[fName](Utils)
 

@@ -41,17 +41,17 @@ class SetSplineRadiusNode(AnimationNode, bpy.types.Node):
     def getExecutionFunctionName(self):
         if self.useSplineList:
             if self.useRadiusList:
-                if self.vectorizationType == "RADIUS_PER_POINT":
-                    return "execute_MultipleSplines_MultipleRadii_PerPoint"
-                else:
-                    return "execute_MultipleSplines_MultipleRadii_PerSpline"
+                return (
+                    "execute_MultipleSplines_MultipleRadii_PerPoint"
+                    if self.vectorizationType == "RADIUS_PER_POINT"
+                    else "execute_MultipleSplines_MultipleRadii_PerSpline"
+                )
             else:
                 return "execute_MultipleSplines_SingleRadius"
+        elif self.useRadiusList:
+            return "execute_SingleSpline_MultipleRadii"
         else:
-            if self.useRadiusList:
-                return "execute_SingleSpline_MultipleRadii"
-            else:
-                return "execute_SingleSpline_SingleRadius"
+            return "execute_SingleSpline_SingleRadius"
 
     def execute_MultipleSplines_MultipleRadii_PerPoint(self, splines, radii):
         for spline in splines:

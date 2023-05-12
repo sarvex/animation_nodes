@@ -248,7 +248,7 @@ class AnimationNode:
     ####################################################
 
     def _applySocketTemplates(self):
-        propertyUpdates = dict()
+        propertyUpdates = {}
         fixedProperties = set()
 
         for socket, template in self.iterSocketsWithTemplate():
@@ -358,8 +358,7 @@ class AnimationNode:
         index = socket.getIndex(self)
         if socket.isOutput:
             if index < self.activeOutputIndex: self.activeOutputIndex -= 1
-        else:
-            if index < self.activeInputIndex: self.activeInputIndex -= 1
+        elif index < self.activeInputIndex: self.activeInputIndex -= 1
         socket.sockets.remove(socket)
 
 
@@ -387,7 +386,7 @@ class AnimationNode:
     def _getInvokeSelectorData(self, selector, function, kwargs):
         if selector == "DATA_TYPE":
             dataTypes = kwargs.get("dataTypes", "ALL")
-            return function + "," + dataTypes, "_selector_DATA_TYPE"
+            return f"{function},{dataTypes}", "_selector_DATA_TYPE"
         elif selector == "PATH":
             return function, "_selector_PATH"
         elif selector == "ID_KEY":
@@ -417,7 +416,7 @@ class AnimationNode:
 
     def invokePopup(self, layout, drawFunctionName, executeFunctionName = "",
                     text = "", icon = "NONE", description = "", emboss = True, width = 250):
-        data = drawFunctionName + "," + executeFunctionName + "," + str(width)
+        data = f"{drawFunctionName},{executeFunctionName},{str(width)}"
         self.invokeFunction(layout, "_openNodePopup", text = text, icon = icon,
                             description = description, emboss = emboss, data = data)
 
@@ -486,9 +485,10 @@ class AnimationNode:
         return getLinkedOutputsDict(self)
 
     def iterInnerLinks(self):
-        names = {}
-        for identifier, variable in self.getInputSocketVariables().items():
-            names[variable] = identifier
+        names = {
+            variable: identifier
+            for identifier, variable in self.getInputSocketVariables().items()
+        }
         for identifier, variable in self.getOutputSocketVariables().items():
             if variable in names:
                 yield (names[variable], identifier)
@@ -518,13 +518,11 @@ class AnimationNode:
 
     @property
     def activeInputSocket(self):
-        if len(self.inputs) == 0: return None
-        return self.inputs[self.activeInputIndex]
+        return None if len(self.inputs) == 0 else self.inputs[self.activeInputIndex]
 
     @property
     def activeOutputSocket(self):
-        if len(self.outputs) == 0: return None
-        return self.outputs[self.activeOutputIndex]
+        return None if len(self.outputs) == 0 else self.outputs[self.activeOutputIndex]
 
     @property
     def originNodes(self):
@@ -569,12 +567,14 @@ class AnimationNode:
 
     def getLocalExecutionCode_ExecutionFunction(self, inputVariables, outputVariables):
         parameterString = ", ".join(inputVariables[socket.identifier] for socket in self.inputs)
-        executionString = "self.{}({})".format(self.getExecutionFunctionName(), parameterString)
+        executionString = f"self.{self.getExecutionFunctionName()}({parameterString})"
 
-        outputString = ", ".join(outputVariables[socket.identifier] for socket in self.outputs)
-
-        if outputString == "": return executionString
-        else: return "{} = {}".format(outputString, executionString)
+        if outputString := ", ".join(
+            outputVariables[socket.identifier] for socket in self.outputs
+        ):
+            return f"{outputString} = {executionString}"
+        else:
+            if outputString == "": return executionString
 
     def getLocalExecutionCode_GetExecutionCode(self, inputVariables, outputVariables, required):
         return toString(self.getExecutionCode(required))
@@ -602,9 +602,7 @@ nodeLabelMode = "DEFAULT"
 
 def updateNodeLabelMode():
     global nodeLabelMode
-    nodeLabelMode = "DEFAULT"
-    if getExecutionCodeType() == "MEASURE":
-        nodeLabelMode = "MEASURE"
+    nodeLabelMode = "MEASURE" if getExecutionCodeType() == "MEASURE" else "DEFAULT"
 
 
 class CurrentSocketData:
@@ -628,10 +626,10 @@ class SocketPropertyState:
 
 class FullNodeState:
     def __init__(self):
-        self.inputProperties = dict()
-        self.outputProperties = dict()
-        self.inputStates = dict()
-        self.outputStates = dict()
+        self.inputProperties = {}
+        self.outputProperties = {}
+        self.inputStates = {}
+        self.outputStates = {}
 
     def update(self, node):
         for socket in node.inputs:
@@ -719,9 +717,7 @@ def createIdentifier():
 def toString(code):
     if isinstance(code, str):
         return code
-    if hasattr(code, "__iter__"):
-        return "\n".join(code)
-    return ""
+    return "\n".join(code) if hasattr(code, "__iter__") else ""
 
 
 @eventHandler("FILE_SAVE_PRE")

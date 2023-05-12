@@ -52,18 +52,17 @@ class GroupExecutionUnit:
         outputNode = self.network.getGroupOutputNode(nodeByID)
 
         yield self.getFunctionHeader(inputNode, variables)
-        yield "    " + getGlobalizeStatement(nodes, variables)
+        yield f"    {getGlobalizeStatement(nodes, variables)}"
         yield from iterIndented(self.iterExecutionScriptLines(nodes, variables, inputNode, nodeByID))
         yield "\n"
-        yield "    " + self.getReturnStatement(outputNode, variables)
+        yield f"    {self.getReturnStatement(outputNode, variables)}"
 
     def getFunctionHeader(self, inputNode, variables):
         for i, socket in enumerate(inputNode.outputs):
-            variables[socket] = "group_input_" + str(i)
+            variables[socket] = f"group_input_{str(i)}"
 
         parameterList = ", ".join([variables[socket] for socket in inputNode.sockets[:-1]])
-        header = "def main({}):".format(parameterList)
-        return header
+        return f"def main({parameterList}):"
 
     def iterExecutionScriptLines(self, nodes, variables, inputNode, nodeByID):
         iterNodeExecutionLines = getFunction_IterNodeExecutionLines()
@@ -77,10 +76,12 @@ class GroupExecutionUnit:
     def getReturnStatement(self, outputNode, variables):
         if outputNode is None: return "return"
         returnList = ", ".join([variables[socket] for socket in outputNode.inputs[:-1]])
-        return "return " + returnList
+        return f"return {returnList}"
 
     def compileScript(self):
-        self.setupCodeObject = compileScript(self.setupScript, name = "group: {}".format(repr(self.network.name)))
+        self.setupCodeObject = compileScript(
+            self.setupScript, name=f"group: {repr(self.network.name)}"
+        )
 
 
     def raiseNotSetupException(self):
@@ -89,4 +90,4 @@ class GroupExecutionUnit:
 
 def iterIndented(lines):
     for line in lines:
-        yield "    " + line
+        yield f"    {line}"

@@ -90,10 +90,7 @@ class CircleMeshNode(AnimationNode, bpy.types.Node):
         useList = any((self.useRadialLoopsList, self.useInnerLoopsList,
                        self.useOuterRadiusList, self.useInnerRadiusList,
                        self.useStartAngleList, self.useEndAngleList))
-        if useList:
-            return "execute_List"
-        else:
-            return "execute_Single"
+        return "execute_List" if useList else "execute_Single"
 
     def execute_List(self, radialLoops, innerLoops, outerRadii, innerRadii,
                            startAngles, endAngles):

@@ -40,7 +40,4 @@ class ExtractMatrixBasisNode(AnimationNode, bpy.types.Node):
         elif self.basisAxis == 'Z':
             bases = extractMatricesZBasis(matrices)
 
-        if not self.useMatrixList:
-            return bases[0]
-        else:
-            return bases
+        return bases[0] if not self.useMatrixList else bases

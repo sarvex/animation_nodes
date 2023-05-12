@@ -49,8 +49,7 @@ class CurveObjectOutputNode(AnimationNode, bpy.types.Node):
         s = self.inputs
         if self.useSplineList:
             if s["Splines"].isUsed:         yield "    self.setSplines(object, splines)"
-        else:
-            if s["Spline"].isUsed:          yield "    self.setSplines(object, [spline])"
+        elif s["Spline"].isUsed:          yield "    self.setSplines(object, [spline])"
         if s["Bevel Depth"].isUsed:         yield "    curve.bevel_depth = bevelDepth"
         if s["Bevel Resolution"].isUsed:    yield "    curve.bevel_resolution = bevelResolution"
         if s["Bevel Start"].isUsed:         yield "    curve.bevel_factor_start = bevelStart"

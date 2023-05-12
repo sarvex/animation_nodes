@@ -62,7 +62,7 @@ class SplineSocket(bpy.types.NodeSocket, AnimationNodeSocket):
                 icon = "OUTLINER_OB_CURVE")
         else:
             object = bpy.context.active_object
-            if getattr(object, "type", "") in ("CURVE", "FONT"):
+            if getattr(object, "type", "") in {"CURVE", "FONT"}:
                 self.object = object
 
     @classmethod
@@ -131,7 +131,8 @@ class SplineListSocket(bpy.types.NodeSocket, PythonListSocket):
 
     @classmethod
     def correctValue(cls, value):
-        if isinstance(value, list):
-            if all(isinstance(element, (BezierSpline, PolySpline)) for element in value):
-                return value, 0
+        if isinstance(value, list) and all(
+            isinstance(element, (BezierSpline, PolySpline)) for element in value
+        ):
+            return value, 0
         return cls.getDefaultValue(), 2

@@ -34,8 +34,9 @@ class MaterialOutputNode(AnimationNode, bpy.types.Node):
         yield "if material is not None:"
         yield "    pass"
         for i, (socketType, name, attr) in enumerate(attributes, 1):
-            setFunction = "setAttribute_" + ('Color' if socketType == 'Color' else 'Numeric')
-            if self.inputs[i].isUsed: yield f"    self.{setFunction}(material, '{attr}', {attr})"
+            if self.inputs[i].isUsed:
+                setFunction = "setAttribute_" + ('Color' if socketType == 'Color' else 'Numeric')
+                yield f"    self.{setFunction}(material, '{attr}', {attr})"
 
     def setAttribute_Color(self, material, attribute, color):
         oldColor = list(getattr(material, attribute))

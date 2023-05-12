@@ -55,10 +55,10 @@ class LSystemNode(AnimationNode, bpy.types.Node):
         col = box.column(align = True)
         col.prop(self, "preset")
         preset = presets[self.preset]
-        col.label(text = "Axiom: " + preset.axiom)
+        col.label(text=f"Axiom: {preset.axiom}")
         for i, rule in enumerate(preset.rules):
-            col.label(text = "Rule {}: {}".format(i, rule))
-        col.label(text = "Angle: " + str(preset.angle))
+            col.label(text=f"Rule {i}: {rule}")
+        col.label(text=f"Angle: {str(preset.angle)}")
 
     def execute(self, axiom, rules, generations, stepSize, angle, seed, scaleWidth, scaleStepSize, gravity, randomAngle, onlyPartialMoves):
         defaults = {

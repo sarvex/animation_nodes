@@ -18,9 +18,7 @@ class FloatToTextNode(AnimationNode, bpy.types.Node):
             ("Text", "text"), ("Texts", "texts")))
 
     def getExecutionFunctionName(self):
-        if self.useList:
-            return "executeList"
-        return "executeSingle"
+        return "executeList" if self.useList else "executeSingle"
 
     def executeSingle(self, number, minLength, decimals, insertSign):
         formatString = self.getFormatString(minLength, decimals, insertSign)
@@ -32,4 +30,4 @@ class FloatToTextNode(AnimationNode, bpy.types.Node):
 
     def getFormatString(self, minLength, decimals, insertSign):
         sign = "+" if insertSign else ""
-        return "{" + ":{}0{}.{}f".format(sign, max(minLength, 0), max(decimals, 0)) + "}"
+        return "{" + f":{sign}0{max(minLength, 0)}.{max(decimals, 0)}f" + "}"

@@ -34,9 +34,7 @@ def getPyPreprocessTasks(PyPreprocessTask, utils):
     return [pyxTask, pxdTask]
 
 def generate_pyx(target, utils):
-    parts = []
-
-    parts.append(utils.readTextFile(paths["pyx imports"]))
+    parts = [utils.readTextFile(paths["pyx imports"])]
 
     source = utils.readTextFile(paths["implementation"])
     parts.append(process(utils, source, {"BOUNDTYPE" : "Bounded"}))
@@ -45,9 +43,7 @@ def generate_pyx(target, utils):
     utils.writeTextFile(target, "\n\n".join(parts))
 
 def generate_pxd(target, utils):
-    parts = []
-
-    parts.append(utils.readTextFile(paths["pxd imports"]))
+    parts = [utils.readTextFile(paths["pxd imports"])]
 
     source = utils.readTextFile(paths["declaration"])
     parts.append(process(utils, source, {"BOUNDTYPE" : "Bounded"}))

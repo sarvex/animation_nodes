@@ -44,7 +44,7 @@ class LoopInputNode(AnimationNode, bpy.types.Node, SubprogramBaseNode):
         col.label(text = "Iterator Sockets:")
         box = col.box()
         for socket in self.getIteratorSockets():
-            box.prop(socket.loop, "useAsOutput", text = "Use {} as Output".format(repr(socket.text)))
+            box.prop(socket.loop, "useAsOutput", text=f"Use {repr(socket.text)} as Output")
         self.invokeSelector(box, "DATA_TYPE", "newIterator",
             dataTypes = "LIST", text = "New Iterator", icon = "PLUS")
 
@@ -79,9 +79,13 @@ class LoopInputNode(AnimationNode, bpy.types.Node, SubprogramBaseNode):
         subcol = box.column(align = True)
         for i, node in enumerate(self.getSortedGeneratorNodes()):
             row = subcol.row(align = True)
-            row.label(text = "{} - {}".format(repr(node.outputName), node.listDataType))
-            self.invokeFunction(row, "moveGeneratorOutput", data = "{};-1".format(i), icon = "TRIA_UP")
-            self.invokeFunction(row, "moveGeneratorOutput", data = "{};1".format(i), icon = "TRIA_DOWN")
+            row.label(text=f"{repr(node.outputName)} - {node.listDataType}")
+            self.invokeFunction(
+                row, "moveGeneratorOutput", data=f"{i};-1", icon="TRIA_UP"
+            )
+            self.invokeFunction(
+                row, "moveGeneratorOutput", data=f"{i};1", icon="TRIA_DOWN"
+            )
         self.invokeSelector(box, "DATA_TYPE", "createGeneratorOutputNode",
             dataTypes = "LIST", text = "New Generator", icon = "PLUS")
 
@@ -117,7 +121,7 @@ class LoopInputNode(AnimationNode, bpy.types.Node, SubprogramBaseNode):
         baseDataType = toBaseDataType(listDataType)
         if name is None: name = baseDataType
 
-        socket = self.newOutput(baseDataType, name, "iterator_" + getRandomString(5))
+        socket = self.newOutput(baseDataType, name, f"iterator_{getRandomString(5)}")
         socket.moveTo(self.newIteratorSocket.getIndex())
         self.setupSocket(socket, name, moveGroup = 1)
         return socket
@@ -125,7 +129,7 @@ class LoopInputNode(AnimationNode, bpy.types.Node, SubprogramBaseNode):
     def newParameter(self, dataType, name = None, defaultValue = None):
         if name is None: name = dataType
 
-        socket = self.newOutput(dataType, name, "parameter_" + getRandomString(5))
+        socket = self.newOutput(dataType, name, f"parameter_{getRandomString(5)}")
         if defaultValue: socket.setProperty(defaultValue)
         socket.moveTo(self.newParameterSocket.getIndex())
         socket.loop.copyAlways = False
@@ -153,9 +157,10 @@ class LoopInputNode(AnimationNode, bpy.types.Node, SubprogramBaseNode):
 
     def duplicate(self, sourceNode):
         self.randomizeNetworkColor()
-        match = re.search("(.*) ([0-9]+)$", self.subprogramName)
-        if match: self.subprogramName = match.group(1) + " " + str(int(match.group(2)) + 1)
-        else: self.subprogramName += " 2"
+        if match := re.search("(.*) ([0-9]+)$", self.subprogramName):
+            self.subprogramName = f"{match[1]} {str(int(match[2]) + 1)}"
+        else:
+            self.subprogramName += " 2"
 
 
     def getSocketData(self):
@@ -174,7 +179,7 @@ class LoopInputNode(AnimationNode, bpy.types.Node, SubprogramBaseNode):
             data.newInput("an_IntegerSocket", "loop_iterations", "Iterations", False, 0)
         else:
             for socket in iteratorSockets:
-                name = socket.text + " List"
+                name = f"{socket.text} List"
                 data.newInput(toListIdName(socket.bl_idname), socket.identifier, name, False, NoDefaultValue)
                 if socket.loop.useAsOutput:
                     data.newOutput(toListIdName(socket.bl_idname), socket.identifier, name, False)

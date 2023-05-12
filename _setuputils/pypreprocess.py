@@ -7,7 +7,7 @@ def execute_PyPreprocess(setupInfoList, addonDirectory):
     tasks = getPyPreprocessTasks(setupInfoList)
     for i, task in enumerate(tasks):
         relativePath = os.path.relpath(task.target, addonDirectory)
-        print("{}/{}: {}".format(i+1, len(tasks), relativePath))
+        print(f"{i + 1}/{len(tasks)}: {relativePath}")
         task.execute()
 
 def getPyPreprocessTasks(setupInfoList):
@@ -24,11 +24,11 @@ def getPyPreprocessTasksOfFile(path):
 
     funcName = "getPyPreprocessTasks"
     if funcName not in obj:
-        raise Exception("expected '{}' function in {}".format(funcName, path))
+        raise Exception(f"expected '{funcName}' function in {path}")
 
     tasks = obj[funcName](PyPreprocessTask, Utils)
     if not all(isinstance(p, PyPreprocessTask) for p in tasks):
-        raise Exception("no list of {} objects returned".format(PyPreprocessTask.__name__))
+        raise Exception(f"no list of {PyPreprocessTask.__name__} objects returned")
     return tasks
 
 def getPyPreprocessorProviders(setupInfoList):
@@ -50,14 +50,13 @@ class PyPreprocessTask:
     def execute(self):
         for path in self.dependencies:
             if not fileExists(path):
-                raise Exception("file not found: " + path)
+                raise Exception(f"file not found: {path}")
 
         if dependenciesChanged(self.target, self.dependencies):
             self.function(self.target, Utils)
 
         if not fileExists(self.target):
-            raise Exception("target has not been generated: " + self.target)
+            raise Exception(f"target has not been generated: {self.target}")
 
     def __repr__(self):
-        return "<{} for '{}' depends on '{}'>".format(
-            type(self).__name__, self.target, self.dependencies)
+        return f"<{type(self).__name__} for '{self.target}' depends on '{self.dependencies}'>"

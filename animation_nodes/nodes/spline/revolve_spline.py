@@ -33,9 +33,7 @@ class RevolveSplineNode(AnimationNode, bpy.types.Node):
         def canExecute():
             if not axis.isEvaluable(): return False
             if not profile.isEvaluable(): return False
-            if splineSamples < 2: return False
-            if surfaceSamples < 3: return False
-            return True
+            return False if splineSamples < 2 else surfaceSamples >= 3
 
         vertices, edgeIndices, polygonIndices = None, None, None
 

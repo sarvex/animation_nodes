@@ -40,8 +40,10 @@ class ProblemsPanel(bpy.types.Panel):
         tree = self.getTree()
         lastExec = tree.lastExecutionInfo
         col.label(text = "Last successful execution using:")
-        col.label(text = "    Blender:   v{}".format(lastExec.blenderVersionString))
-        col.label(text = "    Animation Nodes:   v{}".format(lastExec.animationNodesVersionString))
+        col.label(text=f"    Blender:   v{lastExec.blenderVersionString}")
+        col.label(
+            text=f"    Animation Nodes:   v{lastExec.animationNodesVersionString}"
+        )
 
         if lastExec.isDefault:
             writeText(col,

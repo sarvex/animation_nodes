@@ -3,10 +3,11 @@ from collections import defaultdict
 from .. algorithms.hashing import strToEnumItemID
 
 def enumItemsFromList(itemData):
-    items = []
-    for element in itemData:
-        items.append((element, element, "", "NONE", strToEnumItemID(element)))
-    if len(items) == 0:
+    items = [
+        (element, element, "", "NONE", strToEnumItemID(element))
+        for element in itemData
+    ]
+    if not items:
         items = [("NONE", "NONE", "")]
     return items
 

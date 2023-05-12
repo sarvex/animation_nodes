@@ -60,7 +60,7 @@ def setupExecutionUnits(nodeTrees):
         for unit in executionUnits:
             unit.setup()
             if unit.network.isSubnetwork:
-                subprograms["_subprogram" + unit.network.identifier] = unit.execute
+                subprograms[f"_subprogram{unit.network.identifier}"] = unit.execute
 
         for unit in executionUnits:
             unit.insertSubprogramFunctions(subprograms)
@@ -83,11 +83,11 @@ def getSubprogramUnitByIdentifier(identifier):
     return _subprogramUnitsByIdentifier.get(identifier, None)
 
 def getSubprogramUnitsByName(name):
-    programs = []
-    for subprogram in _subprogramUnitsByIdentifier.values():
-        if subprogram.network.name == name:
-            programs.append(subprogram)
-    return programs
+    return [
+        subprogram
+        for subprogram in _subprogramUnitsByIdentifier.values()
+        if subprogram.network.name == name
+    ]
 
 def getExecutionUnitByNetwork(network):
     for unit in getExecutionUnits([network.nodeTree]):
@@ -99,8 +99,10 @@ def getExecutionUnits(nodeTrees):
         units.extend(_mainUnitsByNodeTree[nodeTree.name])
 
         for network in nodeTree.networks:
-            for subprogramID in getNeededSubprogramIDs(network):
-                units.append(_subprogramUnitsByIdentifier[subprogramID])
+            units.extend(
+                _subprogramUnitsByIdentifier[subprogramID]
+                for subprogramID in getNeededSubprogramIDs(network)
+            )
     return units
 
 def getNeededSubprogramIDs(network):
@@ -109,7 +111,6 @@ def getNeededSubprogramIDs(network):
         if getNetworkByIdentifier(subprogramID)
     }
     for subprogramID in network.referencedSubprogramIDs:
-        subNetwork = getNetworkByIdentifier(subprogramID)
-        if not subNetwork: continue
-        subprogramIDs.update(getNeededSubprogramIDs(subNetwork))
+        if subNetwork := getNetworkByIdentifier(subprogramID):
+            subprogramIDs.update(getNeededSubprogramIDs(subNetwork))
     return subprogramIDs

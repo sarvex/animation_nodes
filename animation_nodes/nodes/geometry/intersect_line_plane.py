@@ -49,10 +49,7 @@ class IntersectLinePlaneNode(AnimationNode, bpy.types.Node):
     def getExecutionFunctionName(self):
         useList = any((self.useLineStartList, self.useLineEndList,
                        self.usePlaneNormalList, self.usePlanePointList))
-        if useList:
-            return "execute_List"
-        else:
-            return "execute_Single"
+        return "execute_List" if useList else "execute_Single"
 
     def execute_List(self, lineStarts, lineEnds, planePoints, planeNormals):
         lineStarts = VirtualVector3DList.create(lineStarts, Vector((0, 0, 1)))

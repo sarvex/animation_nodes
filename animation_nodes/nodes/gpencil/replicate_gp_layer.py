@@ -62,7 +62,7 @@ class ReplicateGPLayerNode(AnimationNode, bpy.types.Node):
         for i, matrix in enumerate(matrices):
             for layer in layers:
                 newLayer = layer.copy()
-                newLayer.layerName = layer.layerName + "-" + str(i)
+                newLayer.layerName = f"{layer.layerName}-{str(i)}"
                 newLayer.tintColor = _tintColors[i]
                 newLayer.tintFactor = _tintFactors[i]
                 newLayer.lineChange = _lineChanges[i]
@@ -83,7 +83,7 @@ class ReplicateGPLayerNode(AnimationNode, bpy.types.Node):
         for i, vector in enumerate(vectors):
             for layer in layers:
                 newLayer = layer.copy()
-                newLayer.layerName = layer.layerName + "-" + str(i)
+                newLayer.layerName = f"{layer.layerName}-{str(i)}"
                 newLayer.tintColor = _tintColors[i]
                 newLayer.tintFactor = _tintFactors[i]
                 newLayer.lineChange = _lineChanges[i]

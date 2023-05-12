@@ -39,10 +39,11 @@ class GPFrameInfoNode(AnimationNode, bpy.types.Node):
         if self.strokeType == "ALL":
             return "execute_AllStrokes"
         elif self.strokeType == "INDEX":
-            if self.useIntegerList:
-                return "execute_StrokeIndices"
-            else:
-                return "execute_StrokeIndex"
+            return (
+                "execute_StrokeIndices"
+                if self.useIntegerList
+                else "execute_StrokeIndex"
+            )
 
     def execute_AllStrokes(self, frame):
         return frame.strokes, frame.frameNumber

@@ -23,8 +23,7 @@ def iterAreasByType(type):
 
 def iterAreas():
     for screen in iterActiveScreens():
-        for area in screen.areas:
-            yield area
+        yield from screen.areas
 
 def iterActiveScreens():
     for windowManager in bpy.data.window_managers:
@@ -34,15 +33,11 @@ def iterActiveScreens():
 
 def splitAreaVertical(area, factor):
     newArea = splitArea(area, "VERTICAL", factor)
-    if factor < 0.5:
-        return newArea, area
-    return area, newArea
+    return (newArea, area) if factor < 0.5 else (area, newArea)
 
 def splitAreaHorizontal(area, factor):
     newArea = splitArea(area, "HORIZONTAL", factor)
-    if factor < 0.5:
-        return newArea, area
-    return area, newArea
+    return (newArea, area) if factor < 0.5 else (area, newArea)
 
 def splitArea(area, direction, factor = 0.5):
     areasWithSameType = set(iterAreasByType(area.type))
@@ -51,8 +46,7 @@ def splitArea(area, direction, factor = 0.5):
                  "window" : bpy.context.window,
                  "screen" : bpy.context.screen}
     bpy.ops.screen.area_split(overwrite, direction = direction, factor = factor)
-    newArea = (set(iterAreasByType(area.type)) - areasWithSameType).pop()
-    return newArea
+    return (set(iterAreasByType(area.type)) - areasWithSameType).pop()
 
 
 def redrawAll():
@@ -64,7 +58,10 @@ def redrawAreaType(areaType):
         area.tag_redraw()
 
 def isViewportRendering():
-    return any([space.shading.type == "RENDERED" for space in iterActiveSpacesByType("VIEW_3D")])
+    return any(
+        space.shading.type == "RENDERED"
+        for space in iterActiveSpacesByType("VIEW_3D")
+    )
 
 def isInterfaceLocked():
     return getattr(bpy.context.window_manager, "is_interface_locked", False)

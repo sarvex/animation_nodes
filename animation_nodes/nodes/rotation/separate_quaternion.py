@@ -29,7 +29,7 @@ class SeparateQuaternionNode(AnimationNode, bpy.types.Node):
                 if self.useList:
                     yield "{0} = self.getAxisList(quaternions, '{0}')".format(axis)
                 else:
-                    yield "{} = quaternion[{}]".format(axis, i)
+                    yield f"{axis} = quaternion[{i}]"
 
     def getAxisList(self, quaternions, axis):
         return getAxisListOfQuaternionList(quaternions, axis)

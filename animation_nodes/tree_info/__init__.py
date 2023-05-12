@@ -155,10 +155,10 @@ def iterUnlinkedInputSockets(node):
             yield socket
 
 def getLinkedDataTypes(socket):
-    dataTypes = set()
-    for linkedSocketID in _forestData.linkedSockets[socket.toID()]:
-        dataTypes.add(_forestData.dataTypeBySocket[linkedSocketID])
-    return dataTypes
+    return {
+        _forestData.dataTypeBySocket[linkedSocketID]
+        for linkedSocketID in _forestData.linkedSockets[socket.toID()]
+    }
 
 def iterLinkedInputSocketsWithOriginDataType(node):
     linkedSocketsDict = _forestData.linkedSockets
@@ -185,9 +185,14 @@ def getNetworksByType(type = "Main"):
     return [network for network in _networks.networks if network.type == type]
 
 def getNetworkByIdentifier(identifier):
-    for network in getNetworks():
-        if network.identifier == identifier: return network
-    return None
+    return next(
+        (
+            network
+            for network in getNetworks()
+            if network.identifier == identifier
+        ),
+        None,
+    )
 
 def getNetworksByNodeTree(nodeTree):
     return [network for network in getNetworks() if network.treeName == nodeTree.name]

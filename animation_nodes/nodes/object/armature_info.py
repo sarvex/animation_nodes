@@ -52,7 +52,7 @@ class ArmatureInfoNode(AnimationNode, bpy.types.Node):
 
         if loadMatrices:
             yield "    matrices = Matrix4x4List(length = len(bones))"
-            yield "    bones.foreach_get('{}', matrices.asMemoryView())".format(matrixName)
+            yield f"    bones.foreach_get('{matrixName}', matrices.asMemoryView())"
             yield "    matrices.transpose()"
         if loadHeads:
             yield "    heads = Vector3DList(length = len(bones))"

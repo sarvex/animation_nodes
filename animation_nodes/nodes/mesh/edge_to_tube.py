@@ -28,10 +28,7 @@ class EdgeToTubeNode(AnimationNode, bpy.types.Node):
         self.newOutput("Mesh", "Mesh", "mesh")
 
     def getExecutionFunctionName(self):
-        if self.useEdgeIndicesList:
-            return "execute_List"
-        else:
-            return "execute_Single"
+        return "execute_List" if self.useEdgeIndicesList else "execute_Single"
 
     def execute_Single(self, inPoints, inEdge, radius, resolution, caps):
         try:

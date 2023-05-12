@@ -16,10 +16,9 @@ class ExecuteNodeTree(bpy.types.Operator):
 
     def execute(self, context):
         nodeTree = bpy.data.node_groups.get(self.name)
-        if nodeTree is not None:
-            if nodeTree.bl_idname == "an_AnimationNodeTree":
-                nodeTree.execute()
-                redrawAll()
-                return {"FINISHED"}
-        self.report({"ERROR"}, "{} is no animation nodes tree".format(repr(self.name)))
+        if nodeTree is not None and nodeTree.bl_idname == "an_AnimationNodeTree":
+            nodeTree.execute()
+            redrawAll()
+            return {"FINISHED"}
+        self.report({"ERROR"}, f"{repr(self.name)} is no animation nodes tree")
         return {"CANCELLED"}

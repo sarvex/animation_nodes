@@ -55,7 +55,7 @@ class SplinesFromObjectNode(AnimationNode, bpy.types.Node):
                     spline.transform(evaluatedObject.matrix_world)
                 return spline
             else:
-                self.raiseErrorMessage("Spline type not supported: " + bSpline.type)
+                self.raiseErrorMessage(f"Spline type not supported: {bSpline.type}")
         else:
             self.raiseErrorMessage("Index out of range")
 

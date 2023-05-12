@@ -9,7 +9,7 @@ def execute_Compile(setupInfoList, addonDirectory):
     printHeader("Compile")
     tasks = getCompileTasks(setupInfoList, addonDirectory)
     for i, task in enumerate(tasks, 1):
-        print("{}/{}:".format(i, len(tasks)))
+        print(f"{i}/{len(tasks)}:")
         task.execute()
 
     compilationInfo = getPlatformSummary()
@@ -20,10 +20,10 @@ def execute_Compile(setupInfoList, addonDirectory):
 def getCompileTasks(setupInfoList, addonDirectory):
     includeDirs = list(iterCustomIncludeDirs(setupInfoList))
 
-    tasks = []
-    for path in iterFilesToCompile(addonDirectory):
-        tasks.append(CompileExtModuleTask(path, addonDirectory, includeDirs))
-    return tasks
+    return [
+        CompileExtModuleTask(path, addonDirectory, includeDirs)
+        for path in iterFilesToCompile(addonDirectory)
+    ]
 
 def iterFilesToCompile(addonDirectory):
     for path in iterPathsWithExtension(addonDirectory, ".pyx"):
@@ -53,8 +53,8 @@ class CompileExtModuleTask:
 def getPossibleCompiledFilesWithTime(cpath):
     directory = os.path.dirname(cpath)
     name = getFileNameWithoutExtension(cpath)
-    pattern = os.path.join(directory, name) + ".*"
-    paths = glob.glob(pattern + ".pyd") + glob.glob(pattern + ".so")
+    pattern = f"{os.path.join(directory, name)}.*"
+    paths = glob.glob(f"{pattern}.pyd") + glob.glob(f"{pattern}.so")
     return [(path, tryGetLastModificationTime(path)) for path in paths]
 
 def getExtensionFromPath(path, addonDirectory, includeDirs = []):
@@ -95,10 +95,7 @@ def getExtensionsArgsFromInfoFile(infoFilePath):
 
     data = executePythonFile(infoFilePath)
     fName = "getExtensionArgs"
-    if fName not in data:
-        return {}
-
-    return data[fName](Utils)
+    return {} if fName not in data else data[fName](Utils)
 
 def buildExtensionInplace(extension):
     from distutils.core import setup
@@ -120,7 +117,6 @@ def getSetupOptions(path):
 
 def getExtensionArgsFromSetupOptions(options):
     args = {}
-    if "c++11" in options:
-        if onLinux or onMacOS:
-            args["extra_compile_args"] = ["-std=c++11"]
+    if "c++11" in options and (onLinux or onMacOS):
+        args["extra_compile_args"] = ["-std=c++11"]
     return args

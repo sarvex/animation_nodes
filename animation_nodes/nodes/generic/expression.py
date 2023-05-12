@@ -70,17 +70,20 @@ class ExpressionNode(AnimationNode, bpy.types.Node):
         if self.containsSyntaxError:
             col.label(text = "Syntax Error", icon = "ERROR")
         else:
-            if self.debugMode and self.expression != "":
-                if self.errorMessage != "":
-                    row = col.row()
-                    row.label(text = self.errorMessage, icon = "ERROR")
-                    self.invokeFunction(row, "clearErrorMessage", icon = "X", emboss = False)
+            if (
+                self.debugMode
+                and self.expression != ""
+                and self.errorMessage != ""
+            ):
+                row = col.row()
+                row.label(text = self.errorMessage, icon = "ERROR")
+                self.invokeFunction(row, "clearErrorMessage", icon = "X", emboss = False)
             if self.correctType:
                 if self.lastCorrectionType == 1:
                     col.label(text = "Automatic Type Correction", icon = "INFO")
                 elif self.lastCorrectionType == 2:
                     col.label(text = "Wrong Output Type", icon = "ERROR")
-                    col.label(text = "Expected {}".format(repr(self.outputDataType)), icon = "INFO")
+                    col.label(text=f"Expected {repr(self.outputDataType)}", icon = "INFO")
 
     def drawAdvanced(self, layout):
         layout.prop(self, "moduleNames")
@@ -118,13 +121,13 @@ class ExpressionNode(AnimationNode, bpy.types.Node):
 
         if self.debugMode:
             yield "try:"
-            yield "    result = " + self.getExpressionCode()
+            yield f"    result = {self.getExpressionCode()}"
             yield "    self.errorMessage = ''"
             yield "except Exception as e:"
             yield "    result = None"
             yield "    self.errorMessage = str(e)"
         else:
-            yield "result = " + self.getExpressionCode()
+            yield f"result = {self.getExpressionCode()}"
 
         if self.correctType:
             yield "result, self.lastCorrectionType = self.outputs[0].correctValue(result)"
@@ -132,17 +135,14 @@ class ExpressionNode(AnimationNode, bpy.types.Node):
     def getExpressionCode(self):
         if self.inlineExpression:
             return self.expression
-        else:
-            if len(self.inputs) == 1:
-                return "self.expressionFunction()"
-            else:
-                parameterList = ", ".join(socket.text for socket in self.inputs[:-1])
-                return "self.expressionFunction({})".format(parameterList)
+        if len(self.inputs) == 1:
+            return "self.expressionFunction()"
+        parameterList = ", ".join(socket.text for socket in self.inputs[:-1])
+        return f"self.expressionFunction({parameterList})"
 
     def getUsedModules(self):
         moduleNames = re.split("\W+", self.moduleNames)
-        modules = [module for module in moduleNames if module != ""]
-        return modules
+        return [module for module in moduleNames if module != ""]
 
     def clearErrorMessage(self):
         self.errorMessage = ""
@@ -210,9 +210,7 @@ class ExpressionNode(AnimationNode, bpy.types.Node):
 
     def getNewSocketName(self):
         inputNames = {socket.text for socket in self.inputs}
-        for name in variableNames:
-            if name not in inputNames: return name
-        return "x"
+        return next((name for name in variableNames if name not in inputNames), "x")
 
     def socketChanged(self):
         self.settingChanged()
@@ -227,9 +225,9 @@ def createExpressionFunction(expression, variables, modules):
 def iterExpressionFunctionLines(expression, variables, modules):
     yield from iter_Imports()
     for name in modules:
-        yield "import " + name
-        yield "from {} import *".format(name)
+        yield f"import {name}"
+        yield f"from {name} import *"
 
-    yield "def main({}):".format(", ".join(variables))
-    yield "    __result__ = " + expression
+    yield f'def main({", ".join(variables)}):'
+    yield f"    __result__ = {expression}"
     yield "    return __result__"

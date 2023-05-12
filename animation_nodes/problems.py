@@ -9,19 +9,13 @@ def reset():
     currentProblems.clear()
 
 def canCreateExecutionUnits():
-    for problem in currentProblems:
-        if not problem.allowUnitCreation(): return False
-    return True
+    return all(problem.allowUnitCreation() for problem in currentProblems)
 
 def canExecute():
-    for problem in currentProblems:
-        if not problem.allowExecution(): return False
-    return True
+    return all(problem.allowExecution() for problem in currentProblems)
 
 def canAutoExecute():
-    for problem in currentProblems:
-        if not problem.allowAutoExecution(): return False
-    return True
+    return all(problem.allowAutoExecution() for problem in currentProblems)
 
 def problemsExist():
     return len(currentProblems) > 0
@@ -155,7 +149,11 @@ class UndefinedNodeExists(Problem):
         col = layout.column(align = True)
         for nodeID in self.nodeIDs:
             node = idToNode(nodeID)
-            props = col.operator("an.move_view_to_node", icon = "VIEWZOOM", text = "{} is undefined".format(repr(node.name)))
+            props = col.operator(
+                "an.move_view_to_node",
+                icon="VIEWZOOM",
+                text=f"{repr(node.name)} is undefined",
+            )
             props.treeName = nodeID[0]
             props.nodeName = nodeID[1]
 
@@ -168,7 +166,7 @@ class NodeMustNotBeInSubprogram(Problem):
 
     def draw(self, layout):
         node = getNodeByIdentifier(self.nodeIdentifier)
-        layout.label(text = "{} must not be in a subprogram".format(repr(node.name)))
+        layout.label(text=f"{repr(node.name)} must not be in a subprogram")
 
 class NodeShouldNotBeUsedInAutoExecution(Problem):
     def __init__(self, nodeIdentifier):
@@ -179,7 +177,7 @@ class NodeShouldNotBeUsedInAutoExecution(Problem):
 
     def draw(self, layout):
         node = getNodeByIdentifier(self.nodeIdentifier)
-        layout.label(text = "{} should not be used with auto execution.".format(repr(node.name)))
+        layout.label(text=f"{repr(node.name)} should not be used with auto execution.")
 
 class NodeDoesNotSupportExecution(Problem):
     def __init__(self, nodeIdentifier):
@@ -190,7 +188,7 @@ class NodeDoesNotSupportExecution(Problem):
 
     def draw(self, layout):
         node = getNodeByIdentifier(self.nodeIdentifier)
-        layout.label(text = "{} does not support excecution".format(repr(node.name)))
+        layout.label(text=f"{repr(node.name)} does not support excecution")
 
 
 # During Code Creation
@@ -228,7 +226,11 @@ class NodeFailesToCreateExecutionCode(Problem):
         writeText(layout, message, autoWidth = True)
 
         node = getNodeByIdentifier(self.nodeIdentifier)
-        props = layout.operator("an.move_view_to_node", icon = "VIEWZOOM", text = "{} does not work".format(repr(node.name)))
+        props = layout.operator(
+            "an.move_view_to_node",
+            icon="VIEWZOOM",
+            text=f"{repr(node.name)} does not work",
+        )
         props.nodeIdentifier = self.nodeIdentifier
 
 class InvalidSyntax(Problem):
@@ -282,7 +284,11 @@ class NodeRaisesExceptionDuringExecution(Problem):
 
     def draw(self, layout):
         node = getNodeByIdentifier(self.nodeIdentifier)
-        props = layout.operator("an.move_view_to_node", icon = "VIEWZOOM", text = "{} does not work".format(repr(node.name)))
+        props = layout.operator(
+            "an.move_view_to_node",
+            icon="VIEWZOOM",
+            text=f"{repr(node.name)} does not work",
+        )
         props.nodeIdentifier = self.nodeIdentifier
 
 

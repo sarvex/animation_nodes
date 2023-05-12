@@ -86,8 +86,8 @@ class SingleIDKeyDataType(IDKeyDataType):
 
     @classmethod
     def getKey(cls, name):
-        return "AN*%s*%s" % (cls.identifier, name)
+        return f"AN*{cls.identifier}*{name}"
 
     @classmethod
     def getPath(cls, name):
-        return '["AN*%s*%s"]' % (cls.identifier, name)
+        return f'["AN*{cls.identifier}*{name}"]'

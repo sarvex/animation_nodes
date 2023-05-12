@@ -11,8 +11,13 @@ class CombineListsNode(AnimationNode, bpy.types.Node):
 
     @classmethod
     def getSearchTags(cls):
-        return [("Combine " + dataType, {"assignedType" : repr(toBaseDataType(dataType))})
-                for dataType in getListDataTypes()]
+        return [
+            (
+                f"Combine {dataType}",
+                {"assignedType": repr(toBaseDataType(dataType))},
+            )
+            for dataType in getListDataTypes()
+        ]
 
     def assignedTypeChanged(self, context):
         self.recreateSockets()
@@ -38,13 +43,16 @@ class CombineListsNode(AnimationNode, bpy.types.Node):
             dataTypes = "LIST", text = "Change Type", icon = "TRIA_RIGHT")
 
     def drawLabel(self):
-        return "Combine " + toListDataType(self.assignedType)
+        return f"Combine {toListDataType(self.assignedType)}"
 
     def getInputSocketVariables(self):
-        return {socket.identifier : "list_" + str(i) for i, socket in enumerate(self.inputs)}
+        return {
+            socket.identifier: f"list_{str(i)}"
+            for i, socket in enumerate(self.inputs)
+        }
 
     def getExecutionCode(self, required):
-        listNames = ["list_" + str(i) for i, socket in enumerate(self.inputs[:-1])]
+        listNames = [f"list_{str(i)}" for i, socket in enumerate(self.inputs[:-1])]
         joinListsCode = self.outputs[0].getJoinListsCode()
         yield "outList = " + joinListsCode.replace("value", ", ".join(listNames))
 

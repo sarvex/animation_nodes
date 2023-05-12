@@ -43,7 +43,7 @@ class EvaluateSplineNode(AnimationNode, bpy.types.Node, SplineEvaluationBase):
             self.newOutput("Float List", "Curvatures", "curvatures", hide = True)
             self.newOutput("Matrix List", "Matrices", "matrices")
         else:
-            parameterInputSettings = dict()
+            parameterInputSettings = {}
             if not self.wrapParameters:
                 parameterInputSettings = dict(minValue = 0, maxValue = 1)
             self.newInput(VectorizedSocket("Float", "useParameterList",
@@ -94,13 +94,13 @@ class EvaluateSplineNode(AnimationNode, bpy.types.Node, SplineEvaluationBase):
             yield "    spline.ensureNormals()"
 
         if self.evaluationType in ("RANGE_COUNT", "RANGE_STEP"):
-            yield from ("    " + c for c in self.getExecutionCode_Range(required))
+            yield from (f"    {c}" for c in self.getExecutionCode_Range(required))
         else:
-            yield from ("    " + c for c in self.getExecutionCode_Parameters(required))
+            yield from (f"    {c}" for c in self.getExecutionCode_Parameters(required))
 
         yield "else:"
         for s in self.outputs:
-            yield "    {} = self.outputs['{}'].getDefaultValue()".format(s.identifier, s.name)
+            yield f"    {s.identifier} = self.outputs['{s.name}'].getDefaultValue()"
 
     def getExecutionCode_Range(self, required):
         yield "_start = min(max(start, 0), 1)"

@@ -14,14 +14,12 @@ class ActionSocket(bpy.types.NodeSocket, AnimationNodeSocket):
         return None
 
     @classmethod
-    def getDefaultValue(self):
+    def getDefaultValue(cls):
         return None
 
     @classmethod
     def correctValue(cls, value):
-        if isinstance(value, Action):
-            return value, 0
-        return cls.getDefaultValue(), 2
+        return (value, 0) if isinstance(value, Action) else (cls.getDefaultValue(), 2)
 
 
 class ActionListSocket(bpy.types.NodeSocket, PythonListSocket):
@@ -39,7 +37,8 @@ class ActionListSocket(bpy.types.NodeSocket, PythonListSocket):
 
     @classmethod
     def correctValue(cls, value):
-        if isinstance(value, list):
-            if all(isinstance(element, Action) for element in value):
-                return value, 0
+        if isinstance(value, list) and all(
+            isinstance(element, Action) for element in value
+        ):
+            return value, 0
         return cls.getDefaultValue(), 2

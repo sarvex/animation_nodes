@@ -35,11 +35,10 @@ class CombineEulerNode(AnimationNode, bpy.types.Node):
             yield self.getExecutionCode_Single()
 
     def getExecutionCode_Single(self):
-        if self.useDegree:
-            toRadian = "math.pi / 180"
-            return "euler = Euler((x * {0}, y * {0}, z * {0}), 'XYZ')".format(toRadian)
-        else:
+        if not self.useDegree:
             return "euler = Euler((x, y, z), 'XYZ')"
+        toRadian = "math.pi / 180"
+        return "euler = Euler((x * {0}, y * {0}, z * {0}), 'XYZ')".format(toRadian)
 
     def createEulerList(self, x, y, z):
         x, y, z = VirtualDoubleList.createMultiple((x, 0), (y, 0), (z, 0))

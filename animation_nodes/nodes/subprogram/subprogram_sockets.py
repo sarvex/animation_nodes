@@ -68,7 +68,7 @@ class SubprogramData:
         else:
             newSocket = node.newOutput(data.idName, data.identifier, data.identifier)
 
-        if newSocket.isInput and not data.defaultValue == NoDefaultValue:
+        if newSocket.isInput and data.defaultValue != NoDefaultValue:
             newSocket.setProperty(data.defaultValue)
         newSocket.hide = data.hideByDefault
         newSocket.text = data.text

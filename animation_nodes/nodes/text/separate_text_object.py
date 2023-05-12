@@ -75,7 +75,7 @@ class SeparateTextObjectNode(AnimationNode, bpy.types.Node):
         for scene in bpy.data.scenes:
             for object in scene.objects:
                 if self.isObjectPartOfThisNode(object):
-                    index = getattr(object, '["{}"]'.format(indexPropertyName), -1)
+                    index = getattr(object, f'["{indexPropertyName}"]', -1)
                     if 0 <= index < self.objectCount:
                         textObjects[index] = object
         return textObjects
@@ -119,18 +119,18 @@ class SeparateTextObjectNode(AnimationNode, bpy.types.Node):
         if self.outputType == "CURVE":
             setCurveObjectsProperties(objects, self.curveDimensions)
 
-        material = bpy.data.materials.get(self.materialName)
-        if material:
+        if material := bpy.data.materials.get(self.materialName):
             setMaterialOnObjects(objects, material)
 
         source.hide_viewport = True
         source.hide_render = True
 
     def removeExistingObjects(self):
-        objects = []
-        for object in bpy.context.scene.objects:
-            if self.isObjectPartOfThisNode(object):
-                objects.append(object)
+        objects = [
+            object
+            for object in bpy.context.scene.objects
+            if self.isObjectPartOfThisNode(object)
+        ]
         for object in objects:
             removeObject(object)
 
@@ -139,12 +139,11 @@ class SeparateTextObjectNode(AnimationNode, bpy.types.Node):
         self.currentID = round(random.random() * 100000)
 
     def isObjectPartOfThisNode(self, object):
-        return getattr(object, '["'+idPropertyName+'"]', -1) == self.currentID
+        return getattr(object, f'["{idPropertyName}"]', -1) == self.currentID
 
     def getSourceObject(self):
         source = bpy.data.objects.get(self.sourceObjectName)
-        if getattr(source, "type", "") == "FONT": return source
-        return None
+        return source if getattr(source, "type", "") == "FONT" else None
 
     def duplicate(self, sourceNode):
         self.createNewNodeID()
@@ -163,7 +162,7 @@ def splitTextObject(sourceObject):
         if character.isspace():
             continue
 
-        newName = sourceObject.name + " part " + str(index).zfill(3)
+        newName = f"{sourceObject.name} part {str(index).zfill(3)}"
         charObject = newCharacterObject(newName, sourceObject.data, index)
 
         charSplinePositions = getSplinePositions(charObject)

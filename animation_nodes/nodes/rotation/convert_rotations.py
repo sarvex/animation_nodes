@@ -90,61 +90,68 @@ class ConvertRotationsNode(AnimationNode, bpy.types.Node):
             if self.conversionType == item[0]: return item[1]
 
     def getExecutionCode(self, required):
-        if self.conversionType == "QUATERNION_TO_EULER":
-            if self.useList:
-                return "eulers = AN.nodes.rotation.c_utils.quaternionListToEulerList(quaternions)"
-            else:
-                return "euler = quaternion.to_euler('XYZ')"
-        if self.conversionType == "EULER_TO_QUATERNION":
-            if self.useList:
-                return "quaternions = AN.nodes.rotation.c_utils.eulerListToQuaternionList(eulers)"
-            else:
-                return "quaternion = euler.to_quaternion()"
-
-        if self.conversionType == "QUATERNION_TO_MATRIX":
-            if self.useList:
-                return "matrices = AN.nodes.rotation.c_utils.quaternionListToMatrixList(quaternions)"
-            else:
-                return "matrix = quaternion.normalized().to_matrix().to_4x4()"
-        if self.conversionType == "MATRIX_TO_QUATERNION":
-            if self.useList:
-                return "quaternions = Matrix4x4List.toQuaternions(matrices)"
-            else:
-                return "quaternion = matrix.to_quaternion()"
-
-        if self.conversionType == "EULER_TO_MATRIX":
-            if self.useList:
-                return "matrices = AN.nodes.matrix.c_utils.createRotationsFromEulers(eulers)"
-            else:
-                return "matrix = euler.to_matrix().to_4x4()"
-        if self.conversionType == "MATRIX_TO_EULER":
-            if self.useList:
-                return "eulers = Matrix4x4List.toEulers(matrices)"
-            else:
-                return "euler = matrix.to_euler('XYZ')"
-
-        if self.conversionType == "QUATERNION_TO_AXIS_ANGLE":
-            if self.useDegree:
-                if self.useList:
-                    return "axises, angles = AN.nodes.rotation.c_utils.quaternionListToAxisListAngleList(quaternions, True)"
-                else:
-                    return "axis, angle = quaternion.axis, math.degrees(quaternion.angle)"
-            else:
-                if self.useList:
-                    return "axises, angles = AN.nodes.rotation.c_utils.quaternionListToAxisListAngleList(quaternions, False)"
-                else:
-                    return "axis, angle = quaternion.to_axis_angle()"
         if self.conversionType == "AXIS_ANGLE_TO_QUATERNION":
             if self.useDegree:
-                if self.useList:
-                    return "quaternions = AN.nodes.rotation.c_utils.axisListAngleListToQuaternionList(axises, angles, True)"
-                else:
-                    return "quaternion = Quaternion(axis, math.radians(angle))"
+                return (
+                    "quaternions = AN.nodes.rotation.c_utils.axisListAngleListToQuaternionList(axises, angles, True)"
+                    if self.useList
+                    else "quaternion = Quaternion(axis, math.radians(angle))"
+                )
             else:
-                if self.useList:
-                    return "quaternions = AN.nodes.rotation.c_utils.axisListAngleListToQuaternionList(axises, angles, False)"
-                else:
-                    return "quaternion = Quaternion(axis, angle)"
+                return (
+                    "quaternions = AN.nodes.rotation.c_utils.axisListAngleListToQuaternionList(axises, angles, False)"
+                    if self.useList
+                    else "quaternion = Quaternion(axis, angle)"
+                )
+        elif self.conversionType == "EULER_TO_MATRIX":
+            return (
+                "matrices = AN.nodes.matrix.c_utils.createRotationsFromEulers(eulers)"
+                if self.useList
+                else "matrix = euler.to_matrix().to_4x4()"
+            )
+        elif self.conversionType == "EULER_TO_QUATERNION":
+            return (
+                "quaternions = AN.nodes.rotation.c_utils.eulerListToQuaternionList(eulers)"
+                if self.useList
+                else "quaternion = euler.to_quaternion()"
+            )
+        elif self.conversionType == "MATRIX_TO_EULER":
+            return (
+                "eulers = Matrix4x4List.toEulers(matrices)"
+                if self.useList
+                else "euler = matrix.to_euler('XYZ')"
+            )
+        elif self.conversionType == "MATRIX_TO_QUATERNION":
+            return (
+                "quaternions = Matrix4x4List.toQuaternions(matrices)"
+                if self.useList
+                else "quaternion = matrix.to_quaternion()"
+            )
+        elif self.conversionType == "QUATERNION_TO_AXIS_ANGLE":
+            if self.useDegree:
+                return (
+                    "axises, angles = AN.nodes.rotation.c_utils.quaternionListToAxisListAngleList(quaternions, True)"
+                    if self.useList
+                    else "axis, angle = quaternion.axis, math.degrees(quaternion.angle)"
+                )
+            else:
+                return (
+                    "axises, angles = AN.nodes.rotation.c_utils.quaternionListToAxisListAngleList(quaternions, False)"
+                    if self.useList
+                    else "axis, angle = quaternion.to_axis_angle()"
+                )
+        elif self.conversionType == "QUATERNION_TO_EULER":
+            return (
+                "eulers = AN.nodes.rotation.c_utils.quaternionListToEulerList(quaternions)"
+                if self.useList
+                else "euler = quaternion.to_euler('XYZ')"
+            )
+        elif self.conversionType == "QUATERNION_TO_MATRIX":
+            return (
+                "matrices = AN.nodes.rotation.c_utils.quaternionListToMatrixList(quaternions)"
+                if self.useList
+                else "matrix = quaternion.normalized().to_matrix().to_4x4()"
+            )
 
     def getUsedModules(self):
         return ["math"]

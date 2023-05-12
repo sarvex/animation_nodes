@@ -50,10 +50,7 @@ class IntersectSpherePlaneNode(AnimationNode, bpy.types.Node):
     def getExecutionFunctionName(self):
         useList = any((self.usePlanePointList, self.usePlaneNormalList,
                        self.useSphereCenterList, self.useSphereRadiusList))
-        if useList:
-            return "execute_List"
-        else:
-            return "execute_Single"
+        return "execute_List" if useList else "execute_Single"
 
     def execute_List(self, sphereCenters, sphereRadii, planePoints, planeNormals):
         sphereCenters = VirtualVector3DList.create(sphereCenters, Vector((0, 0, 0)))

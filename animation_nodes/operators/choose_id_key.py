@@ -13,7 +13,7 @@ class IDKeySearch(bpy.types.Operator):
     def getSearchItems(self, context):
         items = []
         for dataType, name in getAllIDKeys():
-            identifier = toValidString("{} * {}".format(dataType, name))
+            identifier = toValidString(f"{dataType} * {name}")
             items.append((identifier, name, ""))
         return items
 

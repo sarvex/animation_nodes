@@ -52,20 +52,21 @@ class SetVertexWeightNode(AnimationNode, bpy.types.Node):
         layout.prop(self, "groupIdentifierType", text = "Type")
 
     def getExecutionFunctionName(self):
-        if self.mode == "INDEX":
+        if self.mode == "ALL":
+            return (
+                "execute_All_WeightsList"
+                if self.useWeightsList
+                else "execute_All_SingleWeight"
+            )
+        elif self.mode == "INDEX":
             if self.useIndexList:
-                if self.useWeightsList:
-                    return "execute_Indices_WeightsList"
-                else:
-                    return "execute_Indices_SingleWeight"
+                return (
+                    "execute_Indices_WeightsList"
+                    if self.useWeightsList
+                    else "execute_Indices_SingleWeight"
+                )
             else:
                 return "execute_Index_Weight"
-
-        elif self.mode == "ALL":
-            if self.useWeightsList:
-                return "execute_All_WeightsList"
-            else:
-                return "execute_All_SingleWeight"
 
     def execute_Index_Weight(self, object, identifier, index, weight):
         if object is None: return

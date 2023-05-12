@@ -47,7 +47,7 @@ class SeparateColorNode(AnimationNode, bpy.types.Node):
         layout.prop(self, "targetType", expand = True)
 
     def drawLabel(self):
-        return "{}A from Color".format(self.targetType)
+        return f"{self.targetType}A from Color"
 
     def drawAdvanced(self, layout):
         layout.label(text = "Uses linear color space", icon = "INFO")

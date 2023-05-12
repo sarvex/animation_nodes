@@ -43,9 +43,8 @@ class EulerSocket(bpy.types.NodeSocket, AnimationNodeSocket):
     def correctValue(cls, value):
         if isinstance(value, Euler):
             return value, 0
-        else:
-            try: return Euler(value), 1
-            except: return cls.getDefaultValue(), 2
+        try: return Euler(value), 1
+        except: return cls.getDefaultValue(), 2
 
 
 class EulerListSocket(bpy.types.NodeSocket, CListSocket):

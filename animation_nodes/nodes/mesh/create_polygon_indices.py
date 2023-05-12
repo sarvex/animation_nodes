@@ -43,10 +43,11 @@ class CreatePolygonIndicesNode(AnimationNode, bpy.types.Node):
         if self.mode == "INDICES":
             return "execute_Indices"
         elif self.mode == "VERTEX_AMOUNT":
-            if self.useList:
-                return "execute_VertexAmount_List"
-            else:
-                return "execute_VertexAmount_Single"
+            return (
+                "execute_VertexAmount_List"
+                if self.useList
+                else "execute_VertexAmount_Single"
+            )
 
     def execute_Indices(self, indices):
         if len(indices) < 3:
@@ -59,11 +60,10 @@ class CreatePolygonIndicesNode(AnimationNode, bpy.types.Node):
             return tuple(indices)
 
     def execute_VertexAmount_Single(self, vertexAmount):
-        if vertexAmount < 3:
-            self.setErrorMessage("less than 3 indices")
-            return (0, 1, 2)
-        else:
+        if vertexAmount >= 3:
             return tuple(range(vertexAmount))
+        self.setErrorMessage("less than 3 indices")
+        return (0, 1, 2)
 
     def execute_VertexAmount_List(self, lengths):
         try:

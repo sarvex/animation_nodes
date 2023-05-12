@@ -11,8 +11,11 @@ class DataInputNode(AnimationNode, bpy.types.Node):
 
     @classmethod
     def getSearchTags(cls):
-        return [(socket.dataType + " Input", {"assignedType" : repr(socket.dataType)})
-                 for socket in getSocketClasses() if socket.hasProperty()]
+        return [
+            (f"{socket.dataType} Input", {"assignedType": repr(socket.dataType)})
+            for socket in getSocketClasses()
+            if socket.hasProperty()
+        ]
 
     assignedType: StringProperty(default = "Float", update = AnimationNode.refresh)
 
@@ -37,7 +40,7 @@ class DataInputNode(AnimationNode, bpy.types.Node):
                 layout.label(text = "Default Used", icon = "INFO")
 
     def drawLabel(self):
-        return self.inputs[0].dataType + " Input"
+        return f"{self.inputs[0].dataType} Input"
 
     def drawAdvanced(self, layout):
         self.invokeSelector(layout, "DATA_TYPE", "assignSocketType",

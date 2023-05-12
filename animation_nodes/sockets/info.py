@@ -12,21 +12,21 @@ class SocketInfo:
         self.idNames = set()
         self.dataTypes = set()
 
-        self.classByType = dict()
-        self.typeConversion = dict()
-        self.allowedInputDataTypes = dict()
+        self.classByType = {}
+        self.typeConversion = {}
+        self.allowedInputDataTypes = {}
         self.allowedTargetDataTypes = defaultdict(set)
 
-        self.baseIdName = dict()
-        self.listIdName = dict()
-        self.baseDataType = dict()
-        self.listDataType = dict()
+        self.baseIdName = {}
+        self.listIdName = {}
+        self.baseDataType = {}
+        self.listDataType = {}
 
         self.baseDataTypes = set()
         self.listDataTypes = set()
         self.drawableDataTypes = set()
 
-        self.copyFunctionByType = dict()
+        self.copyFunctionByType = {}
 
     def update(self, socketClasses):
         self.reset()
@@ -65,7 +65,7 @@ class SocketInfo:
         self.typeConversion[dataType] = idName
 
         if socketClass.isCopyable():
-            copyFunction = eval("lambda value: " + socketClass.getCopyExpression())
+            copyFunction = eval(f"lambda value: {socketClass.getCopyExpression()}")
         else:
             copyFunction = lambda value: value
 
@@ -139,13 +139,10 @@ def toListDataType(input):
 
 # Data Type <-> Id Name
 def toIdName(input):
-    if isIdName(input): return input
-    return _socketInfo.typeConversion[input]
+    return input if isIdName(input) else _socketInfo.typeConversion[input]
 
 def toDataType(input):
-    if isIdName(input):
-        return _socketInfo.typeConversion[input]
-    return input
+    return _socketInfo.typeConversion[input] if isIdName(input) else input
 
 def isIdName(name):
     return name in _socketInfo.idNames
@@ -205,8 +202,7 @@ def getDrawableDataTypes():
     return list(_socketInfo.drawableDataTypes)
 
 def getDataTypes(skipInternalTypes = False):
-    internalTypes = {"Node Control"}
-    if skipInternalTypes:
-        return [dataType for dataType in _socketInfo.dataTypes if dataType not in internalTypes]
-    else:
+    if not skipInternalTypes:
         return list(_socketInfo.dataTypes)
+    internalTypes = {"Node Control"}
+    return [dataType for dataType in _socketInfo.dataTypes if dataType not in internalTypes]

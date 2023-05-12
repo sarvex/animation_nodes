@@ -6,7 +6,7 @@ class CodeEffect:
         return code
 
     def iterIndented(self, code):
-        yield from ("    " + line for line in code.splitlines())
+        yield from (f"    {line}" for line in code.splitlines())
 
 class DefaultBaseElement:
     pass
@@ -32,9 +32,12 @@ class VectorizeCodeEffect(CodeEffect):
         self.inputIndices.append(index)
         self.allowInputListExtension.append(allowListExtension)
 
-        if defaultElement is not DefaultBaseElement:
-            if not hasEvaluableRepr(defaultElement):
-                raise Exception("This type does not allow 'eval(repr(value))': " + str(defaultElement))
+        if defaultElement is not DefaultBaseElement and not hasEvaluableRepr(
+            defaultElement
+        ):
+            raise Exception(
+                f"This type does not allow 'eval(repr(value))': {str(defaultElement)}"
+            )
         self.defaultInputElements.append(defaultElement)
 
     def output(self, baseName, listName, index):
@@ -44,7 +47,7 @@ class VectorizeCodeEffect(CodeEffect):
         self.outputIndices.append(index)
 
     def rename(self, name):
-        return "_base_" + name
+        return f"_base_{name}"
 
     def apply(self, node, code, required):
         if len(self.baseInputNames) == 0:
@@ -63,63 +66,66 @@ class VectorizeCodeEffect(CodeEffect):
         for name, index in zip(self.listOutputNames, self.outputIndices):
             socket = node.outputs[index]
             if socket.isLinked and name not in self.listInputNames:
-                yield "{} = self.outputs[{}].getDefaultValue()".format(name, index)
+                yield f"{name} = self.outputs[{index}].getDefaultValue()"
 
     def iterIteratorCreationLines(self, iteratorName):
         if len(self.listInputNames) == 1:
-            yield "{} = {}".format(iteratorName, self.listInputNames[0])
+            yield f"{iteratorName} = {self.listInputNames[0]}"
         else:
             amountName = "iterations"
             yield from self.iterGetIterationAmountLines(amountName)
             for i, (name, allowExtension) in enumerate(zip(self.listInputNames,
                                                            self.allowInputListExtension)):
-                iterName = name + "_iter"
+                iterName = f"{name}_iter"
                 if allowExtension:
                     yield from self.iterCreateInputListIteratorLines(i, name, iterName, amountName)
                 else:
                     yield "{0}_iter = {0}".format(name)
 
-            iterators = ", ".join(name + "_iter" for name in self.listInputNames)
-            yield "{} = zip({})".format(iteratorName, iterators)
+            iterators = ", ".join(f"{name}_iter" for name in self.listInputNames)
+            yield f"{iteratorName} = zip({iterators})"
 
     def iterGetIterationAmountLines(self, amountName):
         noExtAmount = self.allowInputListExtension.count(False)
         if noExtAmount == 0:
-            lengths = ["len({})".format(name) for name in self.listInputNames]
-            yield "{} = max({})".format(amountName, ", ".join(lengths))
+            lengths = [f"len({name})" for name in self.listInputNames]
+            yield f'{amountName} = max({", ".join(lengths)})'
         elif noExtAmount == 1:
-            yield "{} = len({})".format(amountName, self.listInputNames[self.allowInputListExtension.index(False)])
+            yield f"{amountName} = len({self.listInputNames[self.allowInputListExtension.index(False)]})"
         else:
-            lengths = []
-            for name, allowExtension in zip(self.listInputNames, self.allowInputListExtension):
-                if not allowExtension:
-                    lengths.append("len({})".format(name))
-            yield "{} = min({})".format(amountName, ", ".join(lengths))
+            lengths = [
+                f"len({name})"
+                for name, allowExtension in zip(
+                    self.listInputNames, self.allowInputListExtension
+                )
+                if not allowExtension
+            ]
+            yield f'{amountName} = min({", ".join(lengths)})'
 
     def iterCreateInputListIteratorLines(self, i, name, iterName, amountName):
         default = self.defaultInputElements[i]
         index = self.inputIndices[i]
         if default is DefaultBaseElement:
-            _default = "self.inputs[{}].baseType.getDefaultValue()".format(index)
+            _default = f"self.inputs[{index}].baseType.getDefaultValue()"
         else:
             defaultRepr = repr(default)
-            _default = "self.inputs[{}].baseType.correctValue({})[0]".format(index, defaultRepr)
+            _default = f"self.inputs[{index}].baseType.correctValue({defaultRepr})[0]"
 
-        yield "if len({}) >= {}:".format(name, amountName)
-        yield "    {} = {}".format(iterName, name)
-        yield "elif len({}) == 0:".format(name)
-        yield "    {} = itertools.cycle([{}])".format(iterName, _default)
-        yield "elif len({}) < {}:".format(name, amountName)
-        yield "    {} = itertools.cycle({})".format(iterName, name)
+        yield f"if len({name}) >= {amountName}:"
+        yield f"    {iterName} = {name}"
+        yield f"elif len({name}) == 0:"
+        yield f"    {iterName} = itertools.cycle([{_default}])"
+        yield f"elif len({name}) < {amountName}:"
+        yield f"    {iterName} = itertools.cycle({name})"
 
     def getLoopStartLine(self, iteratorName):
-        return "for {} in {}:".format(", ".join(self.newBaseInputNames), iteratorName)
+        return f'for {", ".join(self.newBaseInputNames)} in {iteratorName}:'
 
     def iterAppendToOutputListLines(self, node):
         for baseName, listName, index in zip(self.newBaseOutputNames, self.listOutputNames, self.outputIndices):
             socket = node.outputs[index]
             if socket.isLinked and listName not in self.listInputNames:
-                yield "    {}.append({})".format(listName, baseName)
+                yield f"    {listName}.append({baseName})"
 
     def renameVariables(self, code):
         for oldName, newName in zip(self.baseInputNames + self.baseOutputNames,
@@ -145,7 +151,7 @@ class ReturnDefaultsOnExceptionCodeEffect(CodeEffect):
         yield "try:"
         yield from self.iterIndented(code)
         yield "    pass"
-        yield "except {}:".format(self.exceptionString)
+        yield f"except {self.exceptionString}:"
         outputVariables = node.getOutputSocketVariables()
         for i, s in enumerate(node.outputs):
             if s.identifier in required:

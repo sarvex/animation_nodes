@@ -165,10 +165,14 @@ class ExtractPolygonTransformsNode(AnimationNode, bpy.types.Node):
 
     def getDirection(self, extraArgs):
         t = self.directionType
-        if t == "X":   dir = Vector((1, 0, 0))
-        elif t == "Y": dir = Vector((0, 1, 0))
-        elif t == "Z": dir = Vector((0, 0, 1))
-        elif t == "CUSTOM": dir = extraArgs["Direction"]
+        if t == "CUSTOM":
+            dir = extraArgs["Direction"]
+        elif t == "X":
+            if t == "X":   dir = Vector((1, 0, 0))
+        elif t == "Y":
+            dir = Vector((0, 1, 0))
+        elif t == "Z":
+            dir = Vector((0, 0, 1))
         return dir
 
     def invertTransforms(self, transforms):

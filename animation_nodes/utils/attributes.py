@@ -22,7 +22,7 @@ def getAttributeGetter(propName):
 def getMultiAttibuteSetter(propNames):
     code = "def setter(owner, values):\n"
     for i, prop in enumerate(propNames):
-        lines = getAttributeSetterLines("owner", prop, "values[{}]".format(i))
+        lines = getAttributeSetterLines("owner", prop, f"values[{i}]")
         code += "".join(f"    {line}\n" for line in lines)
     code += "    pass"
     variables = {}
@@ -60,14 +60,11 @@ def pathBelongsToArray(object, dataPath):
 
 def _pathBelongsToArray(object, dataPath):
     if not dataPath.startswith("[") and not dataPath.startswith("."):
-        dataPath = "." + dataPath
+        dataPath = f".{dataPath}"
 
     try:
         data = eval(f"object{dataPath}")
-        if isinstance(data, str):
-            # Strings have len() but aren't arrays
-            return False
-        return len(data) > 0
+        return False if isinstance(data, str) else len(data) > 0
     except:
         # Path not found
         return None

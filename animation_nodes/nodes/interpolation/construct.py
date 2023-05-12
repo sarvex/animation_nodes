@@ -73,14 +73,12 @@ class ConstructInterpolationNode(AnimationNode, bpy.types.Node):
 
     def getSinusoidal(self):
         if self.easeIn and self.easeOut: return SinInOut()
-        if self.easeIn: return SinIn()
-        return SinOut()
+        return SinIn() if self.easeIn else SinOut()
 
     def getPower(self, exponent):
         exponent = max(0, int(exponent))
         if self.easeIn and self.easeOut: return PowerInOut(exponent)
-        if self.easeIn: return PowerIn(exponent)
-        return PowerOut(exponent)
+        return PowerIn(exponent) if self.easeIn else PowerOut(exponent)
 
     def getExponential(self, base, exponent):
         if self.easeIn and self.easeOut: return ExponentialInOut(base, exponent)
@@ -89,18 +87,15 @@ class ConstructInterpolationNode(AnimationNode, bpy.types.Node):
 
     def getCircular(self):
         if self.easeIn and self.easeOut: return CircularInOut()
-        if self.easeIn: return CircularIn()
-        return CircularOut()
+        return CircularIn() if self.easeIn else CircularOut()
 
     def getBack(self, back):
         if self.easeIn and self.easeOut: return BackInOut(back)
-        if self.easeIn: return BackIn(back)
-        return BackOut(back)
+        return BackIn(back) if self.easeIn else BackOut(back)
 
     def getBounce(self, bounces, base):
         if self.easeIn and self.easeOut: return BounceInOut(bounces, base)
-        if self.easeIn: return BounceIn(bounces, base)
-        return BounceOut(bounces, base)
+        return BounceIn(bounces, base) if self.easeIn else BounceOut(bounces, base)
 
     def getElastic(self, base, exponent, bounces):
         if self.easeIn and self.easeOut: return ElasticInOut(bounces, base, exponent)

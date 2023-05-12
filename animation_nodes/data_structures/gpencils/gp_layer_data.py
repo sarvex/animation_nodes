@@ -59,7 +59,4 @@ class GPLayer:
                        self.maskLayers)
 
     def isEmptyLayer(self):
-        for frame in self.frames:
-            if len(frame.strokes) > 0:
-                return False
-        return True
+        return all(len(frame.strokes) <= 0 for frame in self.frames)

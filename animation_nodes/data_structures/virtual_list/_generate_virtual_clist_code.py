@@ -31,9 +31,7 @@ def generatePyx(target, utils):
     source = utils.readTextFile(paths["implementation"])
     types = utils.readJsonFile(paths["types"])
 
-    parts = []
-    parts.append("cimport cython")
-
+    parts = ["cimport cython"]
     for listName, info in types.items():
         code = utils.multiReplace(source,
             LISTNAME = listName,
@@ -49,12 +47,9 @@ def generatePxd(target, utils):
     source = utils.readTextFile(paths["declaration"])
     types = utils.readJsonFile(paths["types"])
 
-    parts = []
-    parts.append("from . virtual_list cimport VirtualList")
-
+    parts = ["from . virtual_list cimport VirtualList"]
     for listName, info in types.items():
-        parts.append("from .. lists.base_lists cimport " + listName)
-        parts.append(info["Import"])
+        parts.extend((f"from .. lists.base_lists cimport {listName}", info["Import"]))
         code = utils.multiReplace(source,
             LISTNAME = listName,
             TYPE = info["Type"],

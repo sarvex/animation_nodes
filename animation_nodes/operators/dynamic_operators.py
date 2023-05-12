@@ -26,25 +26,27 @@ def createMissingOperators():
 
 def createOperatorWithDescription(description):
     operatorID = str(len(operatorsByDescription))
-    idName = "an.invoke_function_" + operatorID
+    idName = f"an.invoke_function_{operatorID}"
 
-    operator = type("InvokeFunction_" + operatorID, (bpy.types.Operator, ), {
-        "bl_idname" : idName,
-        "bl_label" : "Are you sure?",
-        "bl_description" : description,
-        "bl_options" : {"UNDO"},
-        "invoke" : invoke_InvokeFunction,
-        "execute" : execute_InvokeFunction,
-        "__annotations__" : {
-            "callback" : StringProperty(),
-            "invokeWithData" : BoolProperty(default = False),
-            "confirm" : BoolProperty(),
-            "data" : StringProperty(),
-            "passEvent" : BoolProperty()
-        }
-    })
-
-    return operator
+    return type(
+        f"InvokeFunction_{operatorID}",
+        (bpy.types.Operator,),
+        {
+            "bl_idname": idName,
+            "bl_label": "Are you sure?",
+            "bl_description": description,
+            "bl_options": {"UNDO"},
+            "invoke": invoke_InvokeFunction,
+            "execute": execute_InvokeFunction,
+            "__annotations__": {
+                "callback": StringProperty(),
+                "invokeWithData": BoolProperty(default=False),
+                "confirm": BoolProperty(),
+                "data": StringProperty(),
+                "passEvent": BoolProperty(),
+            },
+        },
+    )
 
 def invoke_InvokeFunction(self, context, event):
     self._event = event

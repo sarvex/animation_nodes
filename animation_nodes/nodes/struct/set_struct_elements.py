@@ -43,14 +43,17 @@ class SetStructElementsNode(AnimationNode, bpy.types.Node):
         return socket
 
     def getInputSocketVariables(self):
-        variables = {socket.identifier : "input_" + str(i) for i, socket in enumerate(self.inputs[1:-1])}
+        variables = {
+            socket.identifier: f"input_{str(i)}"
+            for i, socket in enumerate(self.inputs[1:-1])
+        }
         variables["struct"] = "struct"
         variables["New Input"] = "newInput"
         return variables
 
     def getExecutionCode(self, required):
         for i, socket in enumerate(self.inputs[1:-1]):
-            yield "struct[({}, {})] = input_{}".format(repr(socket.dataType), repr(socket.text), i)
+            yield f"struct[({repr(socket.dataType)}, {repr(socket.text)})] = input_{i}"
 
     def socketChanged(self):
         executionCodeChanged()

@@ -17,7 +17,7 @@ def drawNodeSettings(layout, node):
     if debuggingIsEnabled():
         layout.separator()
         drawGenericNodeProperties(layout, node)
-        layout.label(text = "Identifier: " + node.identifier)
+        layout.label(text=f"Identifier: {node.identifier}")
 
 def drawGenericNodeProperties(layout, node):
     layout.prop(node, "width", text = "Width")
@@ -107,8 +107,7 @@ def moveSocket(isOutput, moveUp):
 def getActiveSocket(isOutput):
     node = getattr(bpy.context, "active_node", None)
     if node is None: return
-    if isOutput: return node.activeOutputSocket
-    else: return node.activeInputSocket
+    return node.activeOutputSocket if isOutput else node.activeInputSocket
 
 
 

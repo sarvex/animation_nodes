@@ -14,7 +14,7 @@ if currentDirectory not in sys.path:
 
 addonName = "animation_nodes"
 addonDirectory = os.path.join(currentDirectory, addonName)
-exportPath = os.path.join(currentDirectory, "{}.zip".format(addonName))
+exportPath = os.path.join(currentDirectory, f"{addonName}.zip")
 
 from _setuputils.export import execute_Export
 from _setuputils.compilation import execute_Compile

@@ -12,8 +12,13 @@ class CreateListNode(AnimationNode, bpy.types.Node):
 
     @classmethod
     def getSearchTags(cls):
-        return [("Create " + dataType, {"assignedType" : repr(toBaseDataType(dataType))})
-                for dataType in getListDataTypes()]
+        return [
+            (
+                f"Create {dataType}",
+                {"assignedType": repr(toBaseDataType(dataType))},
+            )
+            for dataType in getListDataTypes()
+        ]
 
     def assignedTypeChanged(self, context):
         self.recreateSockets()
@@ -53,16 +58,23 @@ class CreateListNode(AnimationNode, bpy.types.Node):
         self.drawAdvancedTypeSpecific(layout)
 
     def drawLabel(self):
-        return "Create " + toListDataType(self.assignedType)
+        return f"Create {toListDataType(self.assignedType)}"
 
     def getInputSocketVariables(self):
-        return {socket.identifier : "element_" + str(i) for i, socket in enumerate(self.inputs)}
+        return {
+            socket.identifier: f"element_{str(i)}"
+            for i, socket in enumerate(self.inputs)
+        }
 
     def getExecutionCode(self, required):
-        variableNames = ["element_" + str(i) for i, socket in enumerate(self.inputs) if socket.dataType != "Node Control"]
+        variableNames = [
+            f"element_{str(i)}"
+            for i, socket in enumerate(self.inputs)
+            if socket.dataType != "Node Control"
+        ]
         createPyListExpression = "[" + ", ".join(variableNames) + "]"
         createListExpression = self.outputs[0].getFromValuesCode().replace("value", createPyListExpression)
-        return "outList = " + createListExpression
+        return f"outList = {createListExpression}"
 
     def edit(self):
         self.updateOutputName()
@@ -84,7 +96,7 @@ class CreateListNode(AnimationNode, bpy.types.Node):
         self.clearSockets()
 
         self.newInput("Node Control", "...")
-        for i in range(inputAmount):
+        for _ in range(inputAmount):
             self.newInputSocket()
         self.newOutput(toListDataType(self.assignedType), "List", "outList")
 
@@ -105,8 +117,8 @@ class CreateListNode(AnimationNode, bpy.types.Node):
         return socket
 
     def updateOutputName(self):
-        name = "List ({})".format(len(self.inputs) - 1)
         if len(self.outputs) > 0:
+            name = f"List ({len(self.inputs) - 1})"
             self.outputs[0].name = name
 
     def removeUnlinkedInputs(self):

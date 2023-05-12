@@ -78,7 +78,7 @@ class ObjectIDKeyNode(AnimationNode, bpy.types.Node):
             return
 
         keyName = repr(self.keyName)
-        yield "_key = AN.id_keys.IDKeyTypes[{}]".format(repr(self.keyDataType))
+        yield f"_key = AN.id_keys.IDKeyTypes[{repr(self.keyDataType)}]"
         if self.useList:
             yield from self.getExecutionCode_List(keyName, required)
         else:
@@ -88,9 +88,9 @@ class ObjectIDKeyNode(AnimationNode, bpy.types.Node):
         dataType = self.keyDataType
 
         if "exists" in required:
-            yield "exists = _key.exists(object, %s)" % keyName
+            yield f"exists = _key.exists(object, {keyName})"
 
-        yield "data = _key.get(object, %s)" % keyName
+        yield f"data = _key.get(object, {keyName})"
 
         if dataType == "Transforms":
             yield "location, rotation, scale = data"
@@ -105,24 +105,24 @@ class ObjectIDKeyNode(AnimationNode, bpy.types.Node):
         dataType = self.keyDataType
 
         if "exists" in required:
-            yield "exists = _key.existsList(objects, %s)" % keyName
+            yield f"exists = _key.existsList(objects, {keyName})"
 
         if dataType == "Transforms":
             useMatrices = "matrices" in required
             if "locations" in required or useMatrices:
-                yield "locations = _key.getLocations(objects, %s)" % keyName
+                yield f"locations = _key.getLocations(objects, {keyName})"
             if "rotations" in required or useMatrices:
-                yield "rotations = _key.getRotations(objects, %s)" % keyName
+                yield f"rotations = _key.getRotations(objects, {keyName})"
             if "scales" in required or useMatrices:
-                yield "scales = _key.getScales(objects, %s)" % keyName
+                yield f"scales = _key.getScales(objects, {keyName})"
             if useMatrices:
                 yield "matrices = AN.math.composeMatrixList(locations, rotations, scales)"
         elif dataType == "Text":
             if "texts" in required:
-                yield "texts = _key.getList(objects, %s)" % keyName
+                yield f"texts = _key.getList(objects, {keyName})"
         elif dataType in ("Integer", "Float"):
             if "numbers" in required:
-                yield "numbers = _key.getList(objects, %s)" % keyName
+                yield f"numbers = _key.getList(objects, {keyName})"
 
     def getList_Exists(self, objects):
         from animation_nodes.id_keys import doesIDKeyExist
@@ -134,8 +134,8 @@ class ObjectIDKeyNode(AnimationNode, bpy.types.Node):
 
 @findsIDKeys(removable = False)
 def getIDKeysOfNodes():
-    idKeys = set()
-    for node in getNodesByType("an_ObjectIDKeyNode"):
-        if node.keyName != "":
-            idKeys.add(IDKey(node.keyDataType, node.keyName))
-    return idKeys
+    return {
+        IDKey(node.keyDataType, node.keyName)
+        for node in getNodesByType("an_ObjectIDKeyNode")
+        if node.keyName != ""
+    }

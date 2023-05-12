@@ -34,10 +34,13 @@ class CharacterPropertiesOutputNode(AnimationNode, bpy.types.Node):
     def getExecutionCode(self, required):
         lines = []
 
-        if any([socket.isUsed for socket in self.inputs[3:]]):
-            lines.append("if getattr(object, 'type', '') == 'FONT':")
-            lines.append("    textObject = object.data")
-
+        if any(socket.isUsed for socket in self.inputs[3:]):
+            lines.extend(
+                (
+                    "if getattr(object, 'type', '') == 'FONT':",
+                    "    textObject = object.data",
+                )
+            )
             if self.allowNegativeIndex: lines.append("    s, e = start, end")
             else: lines.append("    s, e = max(0, start), max(0, end)")
 

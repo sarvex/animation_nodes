@@ -17,8 +17,7 @@ class SequenceSocket(bpy.types.NodeSocket, AnimationNodeSocket):
     def drawProperty(self, layout, text, node):
         row = layout.row(align = True)
 
-        editor = self.nodeTree.scene.sequence_editor
-        if editor:
+        if editor := self.nodeTree.scene.sequence_editor:
             row.prop_search(self, "sequenceName",  editor, "sequences", icon = "NLA", text = text)
             self.invokeFunction(row, node, "assignActiveSequence", icon = "EYEDROPPER")
         else:
@@ -26,8 +25,8 @@ class SequenceSocket(bpy.types.NodeSocket, AnimationNodeSocket):
 
 
     def getValue(self):
-        editor = self.nodeTree.scene.sequence_editor
-        if editor: return editor.sequences.get(self.sequenceName)
+        if editor := self.nodeTree.scene.sequence_editor:
+            return editor.sequences.get(self.sequenceName)
         return None
 
     def setProperty(self, data):
@@ -40,8 +39,7 @@ class SequenceSocket(bpy.types.NodeSocket, AnimationNodeSocket):
         sequenceEditor = self.nodeTree.scene.sequence_editor
         if not sequenceEditor: return
 
-        sequence = sequenceEditor.active_strip
-        if sequence:
+        if sequence := sequenceEditor.active_strip:
             self.sequenceName = sequence.name
 
     @classmethod
@@ -74,7 +72,8 @@ class SequenceListSocket(bpy.types.NodeSocket, PythonListSocket):
 
     @classmethod
     def correctValue(cls, value):
-        if isinstance(value, list):
-            if all(isinstance(element, Sequence) or element is None for element in value):
-                return value, 0
+        if isinstance(value, list) and all(
+            isinstance(element, Sequence) or element is None for element in value
+        ):
+            return value, 0
         return cls.getDefaultValue(), 2

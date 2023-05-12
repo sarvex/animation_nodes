@@ -39,9 +39,9 @@ addonVersion = getAddonVersion(initPath)
 exportName = "{}_v{}_{}_{}_py{}{}".format(
     addonName, *addonVersion[:2], currentOS, *sys.version_info[:2])
 
-exportPath = os.path.join(currentDirectory, exportName + ".zip")
-exportCPath = os.path.join(currentDirectory, "{}_c.zip".format(addonName))
-exportHeadersPath = os.path.join(currentDirectory, "{}_headers.zip".format(addonName))
+exportPath = os.path.join(currentDirectory, f"{exportName}.zip")
+exportCPath = os.path.join(currentDirectory, f"{addonName}_c.zip")
+exportHeadersPath = os.path.join(currentDirectory, f"{addonName}_headers.zip")
 exportCSetupPath = os.path.join(currentDirectory, "_export_c_setup.py")
 
 possibleCommands = ["build", "help", "clean"]
@@ -71,7 +71,7 @@ def main():
     elif args[0] == "clean":
         main_Clean()
     else:
-        print("Invalid command: '{}'\n".format(args[0]))
+        print(f"Invalid command: '{args[0]}'\n")
         print(helpNote)
         sys.exit()
 
@@ -116,18 +116,16 @@ def main_Clean():
     if answer == "y":
         removedFiles = removeUntrackedFiles(filesToKeep = ["conf.json"])["removed"]
         print("Cleanup Finished.")
-        print("Removed {} files.".format(len(removedFiles)))
+        print(f"Removed {len(removedFiles)} files.")
     else:
         print("Operation canceled.")
         sys.exit()
 
 @returnChangedFileStates(currentDirectory)
 def removeUntrackedFiles(filesToKeep):
-    storedFiles = {}
-    for path in filesToKeep:
-        if fileExists(path):
-            storedFiles[path] = readBinaryFile(path)
-
+    storedFiles = {
+        path: readBinaryFile(path) for path in filesToKeep if fileExists(path)
+    }
     try:
         pipe = subprocess.PIPE
         subprocess.run(["git", "clean", "-fdx"], stdout = pipe, stderr = pipe)
@@ -182,7 +180,7 @@ def printIndentedPathList(paths, basepath):
         print("  <none>")
     else:
         for path in sorted(paths):
-            print("  {}".format(os.path.relpath(path, basepath)))
+            print(f"  {os.path.relpath(path, basepath)}")
 
 @returnChangedFileStates(currentDirectory)
 def build(configs, skipCompilation = False):
@@ -217,7 +215,7 @@ def checkBuildOptions(options):
     options = set(options)
     invalidOptions = options - buildOptions
     if len(invalidOptions) > 0:
-        print("Invalid build options: {}\n".format(invalidOptions))
+        print(f"Invalid build options: {invalidOptions}\n")
         print(helpNote)
         sys.exit()
 

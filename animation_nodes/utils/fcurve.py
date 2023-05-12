@@ -75,9 +75,9 @@ def getArrayValueAtMultipleFrames(object, dataPath, frames, arraySize = 3):
     return values
 
 def getFCurveWithIndex(fCurves, index):
-    for fCurve in fCurves:
-        if fCurve.array_index == index: return fCurve
-    return None
+    return next(
+        (fCurve for fCurve in fCurves if fCurve.array_index == index), None
+    )
 
 
 
@@ -103,10 +103,11 @@ def getFCurvesWithDataPath(object, dataPath, storeInCache = True):
     identifier = (object.type, object.name, dataPath)
     if identifier in cache: return cache[identifier]
 
-    fCurves = []
-    for fCurve in getAllFCurves(object):
-        if fCurve.data_path == dataPath:
-            fCurves.append(fCurve)
+    fCurves = [
+        fCurve
+        for fCurve in getAllFCurves(object)
+        if fCurve.data_path == dataPath
+    ]
     cache[identifier] = fCurves
     return fCurves
 

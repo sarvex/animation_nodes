@@ -136,22 +136,25 @@ class MatrixTransformationBase:
             layout.label(text = "May result in invalid object matrices", icon = "INFO")
 
     def getMatrixTransformationFunctionName(self, useMatrixList):
-        if self.transformationSource == "LOC_ROT_SCALE":
-            if useMatrixList:
-                return "transform_LocRotScale_List"
-            else:
-                return "transform_LocRotScale_Single"
-        elif self.transformationSource == "ACTION":
-            if self.evaluationTimeMode == "FIXED":
-                if useMatrixList:
-                    return "transform_Action_FixedFrame_List"
-                else:
-                    return "transform_Action_FixedFrame_Single"
-            elif self.evaluationTimeMode == "FALLOFF":
-                if useMatrixList:
-                    return "transform_Action_FalloffFrame_List"
-                else:
-                    return "transform_Action_FalloffFrame_Single"
+        if self.transformationSource == "ACTION":
+            if self.evaluationTimeMode == "FALLOFF":
+                return (
+                    "transform_Action_FalloffFrame_List"
+                    if useMatrixList
+                    else "transform_Action_FalloffFrame_Single"
+                )
+            elif self.evaluationTimeMode == "FIXED":
+                return (
+                    "transform_Action_FixedFrame_List"
+                    if useMatrixList
+                    else "transform_Action_FixedFrame_Single"
+                )
+        elif self.transformationSource == "LOC_ROT_SCALE":
+            return (
+                "transform_LocRotScale_List"
+                if useMatrixList
+                else "transform_LocRotScale_Single"
+            )
 
     # Loc/Rot/Scale
     #########################################################

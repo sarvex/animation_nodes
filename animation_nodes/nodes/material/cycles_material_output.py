@@ -18,19 +18,21 @@ class CyclesMaterialOutputNode(AnimationNode, bpy.types.Node):
 
     def getPossibleSocketItems(self, context):
         sockets = self.getPossibleSockets()
-        items = []
-        for socket in sockets:
-            if socket.bl_idname in allowedSocketTypes.keys():
-                items.append((socket.identifier, socket.identifier, ""))
-        return items
+        return [
+            (socket.identifier, socket.identifier, "")
+            for socket in sockets
+            if socket.bl_idname in allowedSocketTypes.keys()
+        ]
 
     def getPossibleSockets(self):
         node = self.getSelectedNode()
         identifiers = []
         if node is not None:
-            for socket in node.inputs:
-                if socket.bl_idname in allowedSocketTypes.keys():
-                    identifiers.append(socket)
+            identifiers.extend(
+                socket
+                for socket in node.inputs
+                if socket.bl_idname in allowedSocketTypes.keys()
+            )
         return identifiers
 
     material: PointerProperty(type = Material, update = AnimationNode.refresh)
@@ -63,10 +65,7 @@ class CyclesMaterialOutputNode(AnimationNode, bpy.types.Node):
 
     def hasPossibleInputs(self, node):
         keys = allowedSocketTypes.keys()
-        for socket in node.inputs:
-            if socket.bl_idname in keys:
-                return True
-        return False
+        return any(socket.bl_idname in keys for socket in node.inputs)
 
     def getExecutionCode(self, required):
         inputSocket = self.inputs.get("Data")
@@ -98,12 +97,12 @@ class CyclesMaterialOutputNode(AnimationNode, bpy.types.Node):
                 self.socketIdentifier = possibleIdentifiers[0]
 
     def getInputIdentifiersFromSocketType(self, searchType):
-        identifiers = []
         sockets = self.getPossibleSockets()
-        for socket in sockets:
-            if allowedSocketTypes[socket.bl_idname] == searchType:
-                identifiers.append(socket.identifier)
-        return identifiers
+        return [
+            socket.identifier
+            for socket in sockets
+            if allowedSocketTypes[socket.bl_idname] == searchType
+        ]
 
     def getSelectedNode(self):
         if self.material is None: return None
@@ -111,17 +110,16 @@ class CyclesMaterialOutputNode(AnimationNode, bpy.types.Node):
         nodeTree = self.material.node_tree
         if nodeTree is None: return
 
-        node = nodeTree.nodes.get(self.nodeName)
-        return node
+        return nodeTree.nodes.get(self.nodeName)
 
     def getSelectedSocket(self):
         node = self.getSelectedNode()
         if node is not None:
-            socket = self.getInputSocketWithIdentifier(node, self.socketIdentifier)
-            return socket
+            return self.getInputSocketWithIdentifier(node, self.socketIdentifier)
         return None
 
     def getInputSocketWithIdentifier(self, node, identifier):
-        for socket in node.inputs:
-            if socket.identifier == identifier: return socket
-        return None
+        return next(
+            (socket for socket in node.inputs if socket.identifier == identifier),
+            None,
+        )

@@ -50,10 +50,7 @@ class SetVertexColorNode(AnimationNode, bpy.types.Node):
         layout.prop(self, "colorLayerIdentifierType", text = "Type")
 
     def getExecutionFunctionName(self):
-        if self.useColorList:
-            return "execute_ColorsList"
-        else:
-            return "execute_SingleColor"
+        return "execute_ColorsList" if self.useColorList else "execute_SingleColor"
 
     def execute_SingleColor(self, object, identifier, color):
         if object is None: return

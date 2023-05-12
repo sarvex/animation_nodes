@@ -23,7 +23,7 @@ class SeparateVectorNode(AnimationNode, bpy.types.Node):
                 if self.useList:
                     yield "{0} = self.getAxisList(vectors, '{0}')".format(axis)
                 else:
-                    yield "{} = vector[{}]".format(axis, i)
+                    yield f"{axis} = vector[{i}]"
 
     def getAxisList(self, vectors, axis):
         return getAxisListOfVectorList(vectors, axis)

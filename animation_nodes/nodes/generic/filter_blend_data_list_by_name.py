@@ -39,12 +39,12 @@ class FilterBlendDataListByNameNode(AnimationNode, bpy.types.Node):
         layout.prop(self, "caseSensitive")
 
     def drawLabel(self):
-        return "Filter {} List".format(self.dataType)
+        return f"Filter {self.dataType} List"
 
     def getExecutionCode(self, required):
         operation = "startswith" if self.filterType == "STARTS_WITH" else "endswith"
 
         if self.caseSensitive:
-            return "targetList = [object for object in sourceList if object is not None and getattr(object, 'name', 'NONE').{}(name)]".format(operation)
+            return f"targetList = [object for object in sourceList if object is not None and getattr(object, 'name', 'NONE').{operation}(name)]"
         else:
-            return "targetList = [object for object in sourceList if object is not None and getattr(object, 'name', 'NONE').lower().{}(name.lower())]".format(operation)
+            return f"targetList = [object for object in sourceList if object is not None and getattr(object, 'name', 'NONE').lower().{operation}(name.lower())]"

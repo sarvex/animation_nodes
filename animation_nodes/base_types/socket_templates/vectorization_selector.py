@@ -36,7 +36,7 @@ class VectorizedSocket(SocketTemplate):
         self.allowListExtension = codeProperties.pop("allowListExtension", True)
         self.defaultElement = codeProperties.pop("default", DefaultBaseElement)
         if len(codeProperties) > 0:
-            raise Exception("invalid code properties: " + str(list(codeProperties.keys())))
+            raise Exception(f"invalid code properties: {list(codeProperties.keys())}")
 
     @classmethod
     def newProperty(cls):
@@ -76,7 +76,7 @@ class VectorizedSocket(SocketTemplate):
 
     def applyWithContext(self, node, socket, updatedProperties, fixedProperties):
         linkedDataTypes = tuple(sorted(socket.linkedDataTypes - {"Generic", "Generic List"}))
-        if len(linkedDataTypes) == 0:
+        if not linkedDataTypes:
             return {prop : False for prop in self.properties}, set()
 
         linkedType = linkedDataTypes[0]
@@ -88,26 +88,31 @@ class VectorizedSocket(SocketTemplate):
                 prop = self.getPropertyThatShouldBeBase(updatedProperties, fixedProperties)
                 if prop is not None:
                     return {prop : False}, {prop}
-        else:
-            if linkedType in self.outputListTypes:
-                prop = self.getPropertyThatShouldBeList(updatedProperties, fixedProperties)
-                if prop is not None:
-                    return {prop : True}, {prop}
-            elif linkedType in self.outputBaseTypes:
-                if self.canAllBeBase(updatedProperties, fixedProperties):
-                    return {prop : False for prop in self.properties}, set(self.properties)
+        elif linkedType in self.outputListTypes:
+            prop = self.getPropertyThatShouldBeList(updatedProperties, fixedProperties)
+            if prop is not None:
+                return {prop : True}, {prop}
+        elif linkedType in self.outputBaseTypes:
+            if self.canAllBeBase(updatedProperties, fixedProperties):
+                return {prop : False for prop in self.properties}, set(self.properties)
 
     def noneIsFixedBase(self, updatedProperties, fixedProperties):
-        for prop in self.properties:
-            if not updatedProperties.get(prop, False) and prop in fixedProperties:
-                return False
-        return True
+        return not any(
+            not updatedProperties.get(prop, False) and prop in fixedProperties
+            for prop in self.properties
+        )
 
     def getPropertyThatShouldBeBase(self, updatedProperties, fixedProperties):
-        for prop in self.properties:
-            if not (updatedProperties.get(prop, False) and prop in fixedProperties):
-                return prop
-        return None
+        return next(
+            (
+                prop
+                for prop in self.properties
+                if not (
+                    updatedProperties.get(prop, False) and prop in fixedProperties
+                )
+            ),
+            None,
+        )
 
     def getPropertyThatShouldBeList(self, updatedProperties, fixedProperties):
         # first check if there is already a list
@@ -115,31 +120,30 @@ class VectorizedSocket(SocketTemplate):
             if updatedProperties.get(prop, False):
                 return prop
 
-        # then check if something can be made a list
-        for prop in self.properties:
-            if prop not in fixedProperties:
-                return prop
-
-        return None
+        return next(
+            (prop for prop in self.properties if prop not in fixedProperties), None
+        )
 
     def canAllBeBase(self, updatedProperties, fixedProperties):
-        for prop in self.properties:
-            if updatedProperties.get(prop, False) and prop in fixedProperties:
-                return False
-        return True
+        return not any(
+            updatedProperties.get(prop, False) and prop in fixedProperties
+            for prop in self.properties
+        )
 
     @classmethod
     def CodeEffect(cls, node):
         effect = VectorizeCodeEffect()
 
         for i, (socket, template) in enumerate(node.iterInputSocketsWithTemplate()):
-            if isinstance(template, VectorizedSocket):
-                if template.inputShouldBeList(node):
-                    effect.input(template.baseIdentifier, template.listIdentifier, i, template.allowListExtension, template.defaultElement)
+            if isinstance(
+                template, VectorizedSocket
+            ) and template.inputShouldBeList(node):
+                effect.input(template.baseIdentifier, template.listIdentifier, i, template.allowListExtension, template.defaultElement)
 
         for i, (socket, template) in enumerate(node.iterOutputSocketsWithTemplate()):
-            if isinstance(template, VectorizedSocket):
-                if template.outputShouldBeList(node):
-                    effect.output(template.baseIdentifier, template.listIdentifier, i)
+            if isinstance(
+                template, VectorizedSocket
+            ) and template.outputShouldBeList(node):
+                effect.output(template.baseIdentifier, template.listIdentifier, i)
 
         return effect

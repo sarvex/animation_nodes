@@ -14,7 +14,7 @@ def insertCallback(identifier, function):
     return identifier
 
 def newParameterizedCallback(identifier, *parameters):
-    return "#" + repr((identifier, parameters))
+    return f"#{repr((identifier, parameters))}"
 
 def executeCallback(identifier, *args, **kwargs):
     if identifier == "":

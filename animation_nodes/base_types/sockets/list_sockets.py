@@ -39,11 +39,11 @@ class CListSocket(ListSocket):
 
     @classmethod
     def getFromValuesCode(cls):
-        return cls.listClass.__name__ + ".fromValues(value)"
+        return f"{cls.listClass.__name__}.fromValues(value)"
 
     @classmethod
     def getJoinListsCode(cls):
-        return cls.listClass.__name__ + ".join(value)"
+        return f"{cls.listClass.__name__}.join(value)"
 
     @classmethod
     def correctValue(cls, value):

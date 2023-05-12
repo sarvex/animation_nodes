@@ -24,10 +24,7 @@ class ObjectMaterialOutputNode(AnimationNode, bpy.types.Node):
         row.prop(self, "appendMaterials")
 
     def getExecutionFunctionName(self):
-        if self.useMaterialList:
-            return "executeList"
-        else:
-            return "executeSingle"
+        return "executeList" if self.useMaterialList else "executeSingle"
 
     def executeSingle(self, object, material):
         if object is None or not hasattr(object.data, "materials"): return object
@@ -51,7 +48,8 @@ class ObjectMaterialOutputNode(AnimationNode, bpy.types.Node):
         return object
 
     def appendMaterial(self, objectMaterials, material):
-        if self.appendMaterials:
-            if material.name not in objectMaterials: objectMaterials.append(material)
-        else:
-            objectMaterials.append(material)
+        if (
+            self.appendMaterials
+            and material.name not in objectMaterials
+            or not self.appendMaterials
+        ): objectMaterials.append(material)

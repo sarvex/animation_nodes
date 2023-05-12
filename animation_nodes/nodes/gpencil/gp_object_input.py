@@ -52,12 +52,22 @@ class GPObjectInputNode(AnimationNode, bpy.types.Node):
             return []
 
         evaluatedObject = getEvaluatedID(object)
-        gpencilLayers = []
-        for layer in self.getLayers(evaluatedObject):
-            gpencilLayers.append(GPLayer(layer.info, self.getFrames(layer, evaluatedObject, useWorldSpace),
-                                         layer.blend_mode, layer.opacity, layer.use_lights, self.getTintColor(layer), layer.tint_factor,
-                                         layer.line_change, layer.pass_index, False, self.getMaskLayers(layer, object, useWorldSpace)))
-        return gpencilLayers
+        return [
+            GPLayer(
+                layer.info,
+                self.getFrames(layer, evaluatedObject, useWorldSpace),
+                layer.blend_mode,
+                layer.opacity,
+                layer.use_lights,
+                self.getTintColor(layer),
+                layer.tint_factor,
+                layer.line_change,
+                layer.pass_index,
+                False,
+                self.getMaskLayers(layer, object, useWorldSpace),
+            )
+            for layer in self.getLayers(evaluatedObject)
+        ]
 
     def getLayer(self, object, layerName):
         layers = self.getLayers(object)
@@ -90,13 +100,16 @@ class GPObjectInputNode(AnimationNode, bpy.types.Node):
         return object.data
 
     def getFrames(self, layer, object, useWorldSpace):
-        frames = [GPFrame(self.getStrokes(frame.strokes, object, useWorldSpace), frame.frame_number)
-                  for frame in layer.frames]
-        return frames
+        return [
+            GPFrame(
+                self.getStrokes(frame.strokes, object, useWorldSpace),
+                frame.frame_number,
+            )
+            for frame in layer.frames
+        ]
 
     def getStrokes(self, strokes, object, useWorldSpace):
-        newStrokes = [self.getStroke(stroke, object, useWorldSpace) for stroke in strokes]
-        return newStrokes
+        return [self.getStroke(stroke, object, useWorldSpace) for stroke in strokes]
 
     def getStroke(self, stroke, object, useWorldSpace):
         strokePoints = stroke.points

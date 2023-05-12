@@ -43,8 +43,7 @@ class FillListNode(AnimationNode, bpy.types.Node):
             dataTypes = "LIST", text = "Change Type", icon = "TRIA_RIGHT")
 
     def getExecutionCode(self, required):
-        yield ("outList = AN.algorithms.lists.fill('{}', inList, '{}', length, fillElement, {})"
-               .format(toListDataType(self.assignedType), self.fillMode, self.makeElementCopies))
+        yield f"outList = AN.algorithms.lists.fill('{toListDataType(self.assignedType)}', inList, '{self.fillMode}', length, fillElement, {self.makeElementCopies})"
 
     def assignListDataType(self, listDataType):
         self.assignType(toBaseDataType(listDataType))

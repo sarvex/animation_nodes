@@ -15,8 +15,8 @@ class LoopBreakNode(AnimationNode, bpy.types.Node):
         self.newInput("Boolean", "Continue", "continueCondition", value = True)
 
     def draw(self, layout):
-        node = self.loopInputNode
-        if node: layout.label(text = node.subprogramName, icon = "GROUP_VERTEX")
+        if node := self.loopInputNode:
+            layout.label(text = node.subprogramName, icon = "GROUP_VERTEX")
 
     def edit(self):
         network = self.network

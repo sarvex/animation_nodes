@@ -53,7 +53,7 @@ class GetRandomListElementsNode(AnimationNode, bpy.types.Node):
         elif self.selectionType == "MULTIPLE":
             yield "_seed += amount * 45234"
             yield "_amount = min(max(amount, 0), len(inList))"
-            yield "outList, indices = AN.algorithms.lists.sample('%s', inList, _amount, _seed)" % self.assignedType
+            yield f"outList, indices = AN.algorithms.lists.sample('{self.assignedType}', inList, _amount, _seed)"
 
     def getUsedModules(self):
         return ["random"]

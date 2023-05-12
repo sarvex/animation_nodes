@@ -26,9 +26,7 @@ class SceneSocket(bpy.types.NodeSocket, AnimationNodeSocket):
         row.prop(self, "useGlobalScene", text = "", icon = "WORLD")
 
     def getValue(self):
-        if self.useGlobalScene:
-            return self.nodeTree.scene
-        return self.scene
+        return self.nodeTree.scene if self.useGlobalScene else self.scene
 
     def setProperty(self, data):
         self.scene, self.useGlobalScene = data
@@ -63,7 +61,7 @@ class SceneListSocket(bpy.types.NodeSocket, PythonListSocket):
         row = layout.row(align = True)
         if self.useGlobalScene:
             if text != "": text += ": "
-            row.label(text = text + "[{}]".format(repr(self.nodeTree.scene.name)))
+            row.label(text=f"{text}[{repr(self.nodeTree.scene.name)}]")
         else:
             if not text: text = self.text
             row.label(text = text)
@@ -78,7 +76,8 @@ class SceneListSocket(bpy.types.NodeSocket, PythonListSocket):
 
     @classmethod
     def correctValue(cls, value):
-        if isinstance(value, list):
-            if all(isinstance(element, Scene) or element is None for element in value):
-                return value, 0
+        if isinstance(value, list) and all(
+            isinstance(element, Scene) or element is None for element in value
+        ):
+            return value, 0
         return cls.getDefaultValue(), 2

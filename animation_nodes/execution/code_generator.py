@@ -20,9 +20,11 @@ def getInitialVariables(nodes):
         nodeIdentifierPart = node.identifier[:4]
         for index, socket in enumerate(chain(node.inputs, node.outputs)):
             if socket.identifier.isidentifier():
-                variables[socket] = "_" + socket.identifier + nodeIdentifierPart + str(index)
+                variables[socket] = f"_{socket.identifier}{nodeIdentifierPart}{str(index)}"
             else:
-                variables[socket] = "__socket_" + str(socket.is_output) + "_" + str(index) + nodeIdentifierPart
+                variables[
+                    socket
+                ] = f"__socket_{str(socket.is_output)}_{str(index)}{nodeIdentifierPart}"
     return variables
 
 
@@ -40,7 +42,7 @@ def iter_Imports(nodes = []):
     yield "import itertools"
     yield "from time import perf_counter as getCurrentTime"
     yield "from mathutils import Vector, Matrix, Quaternion, Euler"
-    yield "AN = animation_nodes = sys.modules.get({})".format(repr(addonName))
+    yield f"AN = animation_nodes = sys.modules.get({repr(addonName)})"
     yield "from animation_nodes.data_structures import *"
     yield "from animation_nodes import algorithms"
 
@@ -48,7 +50,7 @@ def get_ImportModules(nodes):
     neededModules = {"bpy", "sys"}
     neededModules.update(getModulesNeededByNodes(nodes))
     modulesString = ", ".join(neededModules)
-    return "import " + modulesString
+    return f"import {modulesString}"
 
 def getModulesNeededByNodes(nodes):
     moduleNames = set()
@@ -60,9 +62,9 @@ def get_LoadMeasurementsDict():
     return "_node_execution_times = animation_nodes.execution.measurements.getMeasurementsDict()"
 
 def iter_GetNodeReferences(nodes):
-    yield "nodes = bpy.data.node_groups[{}].nodes".format(repr(nodes[0].nodeTree.name))
+    yield f"nodes = bpy.data.node_groups[{repr(nodes[0].nodeTree.name)}].nodes"
     for node in nodes:
-        yield "{} = nodes[{}]".format(node.identifier, repr(node.name))
+        yield f"{node.identifier} = nodes[{repr(node.name)}]"
 
 def iter_GetSocketValues(nodes, variables):
     for node in nodes:
@@ -71,18 +73,18 @@ def iter_GetSocketValues(nodes, variables):
                 yield getLoadSocketValueLine(socket, node, variables, i)
 
 def getLoadSocketValueLine(socket, node, variables, index = None):
-    return "{} = {}".format(variables[socket], getSocketValueExpression(socket, node, index))
+    return f"{variables[socket]} = {getSocketValueExpression(socket, node, index)}"
 
 def getSocketValueExpression(socket, node, index = None):
     socketsName = "inputs" if socket.isInput else "outputs"
     if index is None: index = socket.getIndex(node)
 
     if hasattr(socket, "getValue"):
-        return "{}.{}[{}].getValue()".format(node.identifier, socketsName, index)
+        return f"{node.identifier}.{socketsName}[{index}].getValue()"
     elif hasattr(socket, "getDefaultValueCode"):
         return socket.getDefaultValueCode()
     else:
-        return "{}.{}[{}].getDefaultValue()".format(node.identifier, socketsName, index)
+        return f"{node.identifier}.{socketsName}[{index}].getDefaultValue()"
 
 
 
@@ -91,8 +93,7 @@ def getSocketValueExpression(socket, node, index = None):
 
 def getGlobalizeStatement(nodes, variables):
     socketNames = [variables[socket] for socket in iterUnlinkedSockets(nodes) if socket.dataType != "Node Control"]
-    if len(socketNames) == 0: return ""
-    return "global " + ", ".join(socketNames)
+    return "" if not socketNames else "global " + ", ".join(socketNames)
 
 def iterUnlinkedSockets(nodes):
     for node in nodes:
@@ -123,15 +124,19 @@ def iterNodeExecutionLines_Monitored(node, variables):
     yield "try:"
     try:
         for line in iterRealNodeExecutionLines(node, variables):
-            yield "    " + line
+            yield f"    {line}"
         for socket in node.linkedOutputs:
             yield "    if not ({0} in globals() or {0} in locals()): raise Exception({1})".format(
-                repr(variables[socket]), repr("Socket output has not been calculated: " + repr(socket.getDisplayedName())))
+                repr(variables[socket]),
+                repr(
+                    f"Socket output has not been calculated: {repr(socket.getDisplayedName())}"
+                ),
+            )
     except:
         handleExecutionCodeCreationException(node)
     yield "    pass"
     yield "except Exception as e:"
-    yield "    animation_nodes.problems.NodeRaisesExceptionDuringExecution({}).report()".format(repr(node.identifier))
+    yield f"    animation_nodes.problems.NodeRaisesExceptionDuringExecution({repr(node.identifier)}).report()"
     yield "    raise"
 
 def iterNodeExecutionLines_MeasureTimes(node, variables):
@@ -141,7 +146,7 @@ def iterNodeExecutionLines_MeasureTimes(node, variables):
         yield from setupNodeForExecution(node, variables)
         yield from iterRealNodeExecutionLines(node, variables)
         yield "_execution_end_time = getCurrentTime()"
-        yield "_node_execution_times[{}].registerTime(_execution_end_time - _execution_start_time)".format(repr(node.identifier))
+        yield f"_node_execution_times[{repr(node.identifier)}].registerTime(_execution_end_time - _execution_start_time)"
     except:
         handleExecutionCodeCreationException(node)
 
@@ -155,7 +160,7 @@ def iterNodeExecutionLines_Bake(node, variables):
 
 def iterNodeCommentLines(node):
     yield ""
-    yield "# Node: {} - {}".format(repr(node.nodeTree.name), repr(node.name))
+    yield f"# Node: {repr(node.nodeTree.name)} - {repr(node.name)}"
 
 def setupNodeForExecution(node, variables):
     yield from iterNodePreExecutionLines(node, variables)
@@ -174,16 +179,16 @@ def iterInputConversionLines(node, variables):
 
 def getConvertInputLine(node, socket, convertCode, variables):
     convertCode = replaceVariableName(convertCode, "value", variables[socket])
-    newVariableName = variables[socket] + "_converted"
+    newVariableName = f"{variables[socket]}_converted"
     variables[socket] = newVariableName
-    return "{} = {}".format(newVariableName, convertCode)
+    return f"{newVariableName} = {convertCode}"
 
 def iterInputCopyLines(node, variables):
     for socket in node.inputs:
         if socket.dataIsModified and socket.isCopyable() and not isSocketLinked(socket, node):
-            newName = variables[socket] + "_copy"
+            newName = f"{variables[socket]}_copy"
             if hasattr(socket, "getDefaultValueCode"):
-                line = "{} = {}".format(newName, socket.getDefaultValueCode())
+                line = f"{newName} = {socket.getDefaultValueCode()}"
             else: line = getCopyLine(socket, newName, variables)
             variables[socket] = newName
             yield line
@@ -252,7 +257,7 @@ def getTargetsThatNeedACopy(socket, targets):
     else: return modifiedTargets[1:]
 
 def getCopyLine(fromSocket, targetName, variables):
-    return "{} = {}".format(targetName, getCopyExpression(fromSocket, variables))
+    return f"{targetName} = {getCopyExpression(fromSocket, variables)}"
 
 def getCopyExpression(socket, variables):
     return socket.getCopyExpression().replace("value", variables[socket])

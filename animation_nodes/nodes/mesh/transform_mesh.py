@@ -48,32 +48,32 @@ class TransformMeshNode(AnimationNode, bpy.types.Node):
     def getExecutionFunctionName(self):
         if self.transformationType == "MATRIX":
             if self.useMeshList:
-                if self.useTransformationList:
-                    return "execute_MultipleMeshes_MultipleMatrices"
-                else:
-                    return "execute_MultipleMeshes_SingleMatrix"
+                return (
+                    "execute_MultipleMeshes_MultipleMatrices"
+                    if self.useTransformationList
+                    else "execute_MultipleMeshes_SingleMatrix"
+                )
+            if self.useTransformationList:
+                return (
+                    "execute_SingleMesh_MultipleMatrices_Joined"
+                    if self.joinMeshes
+                    else "execute_SingleMesh_MultipleMatrices_Separated"
+                )
             else:
-                if self.useTransformationList:
-                    if self.joinMeshes:
-                        return "execute_SingleMesh_MultipleMatrices_Joined"
-                    else:
-                        return "execute_SingleMesh_MultipleMatrices_Separated"
-                else:
-                    return "execute_Single_Matrix"
+                return "execute_Single_Matrix"
+        elif self.useMeshList:
+            if self.useTransformationList:
+                return "execute_MultipleMeshes_MultipleVectors"
+            else:
+                return "execute_MultipleMeshes_SingleVector"
+        elif self.useTransformationList:
+            return (
+                "execute_SingleMesh_MultipleVectors_Joined"
+                if self.joinMeshes
+                else "execute_SingleMesh_MultipleVectors_Separated"
+            )
         else:
-            if self.useMeshList:
-                if self.useTransformationList:
-                    return "execute_MultipleMeshes_MultipleVectors"
-                else:
-                    return "execute_MultipleMeshes_SingleVector"
-            else:
-                if self.useTransformationList:
-                    if self.joinMeshes:
-                        return "execute_SingleMesh_MultipleVectors_Joined"
-                    else:
-                        return "execute_SingleMesh_MultipleVectors_Separated"
-                else:
-                    return "execute_Single_Vector"
+            return "execute_Single_Vector"
 
     def execute_Single_Vector(self, mesh, vector):
         mesh.move(vector)
@@ -142,10 +142,7 @@ class TransformMeshNode(AnimationNode, bpy.types.Node):
         return self.joinWhenNecessary(outMeshes)
 
     def joinWhenNecessary(self, meshes):
-        if self.joinMeshes:
-            return Mesh.join(*meshes)
-        else:
-            return meshes
+        return Mesh.join(*meshes) if self.joinMeshes else meshes
 
     @property
     def hasListInput(self):

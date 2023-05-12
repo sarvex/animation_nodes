@@ -28,8 +28,7 @@ class ShapeKeySocket(bpy.types.NodeSocket, AnimationNodeSocket):
         except: return None
 
     def assignActiveObject(self):
-        object = bpy.context.active_object
-        if object:
+        if object := bpy.context.active_object:
             self.object = object
 
     def setProperty(self, object):
@@ -60,7 +59,8 @@ class ShapeKeyListSocket(bpy.types.NodeSocket, PythonListSocket):
 
     @classmethod
     def correctValue(cls, value):
-        if isinstance(value, list):
-            if all(isinstance(element, ShapeKey) or element is None for element in value):
-                return value, 0
+        if isinstance(value, list) and all(
+            isinstance(element, ShapeKey) or element is None for element in value
+        ):
+            return value, 0
         return cls.getDefaultValue(), 2

@@ -74,9 +74,10 @@ class GroupInputNode(AnimationNode, bpy.types.Node, SubprogramBaseNode):
 
     def duplicate(self, sourceNode):
         self.randomizeNetworkColor()
-        match = re.search("(.*) ([0-9]+)$", self.subprogramName)
-        if match: self.subprogramName = match.group(1) + " " + str(int(match.group(2)) + 1)
-        else: self.subprogramName += " 2"
+        if match := re.search("(.*) ([0-9]+)$", self.subprogramName):
+            self.subprogramName = f"{match[1]} {str(int(match[2]) + 1)}"
+        else:
+            self.subprogramName += " 2"
 
     def getSocketData(self):
         data = SubprogramData()

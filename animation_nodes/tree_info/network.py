@@ -38,7 +38,7 @@ class NodeNetwork:
             possibleIdentifiers = list({nodeByID[nodeID].loopInputIdentifier for nodeID in additionalLoopNodeIDs})
             if self.loopInAmount == 0 and len(possibleIdentifiers) == 1:
                 self.identifier = possibleIdentifiers[0]
-            elif self.loopInAmount == 1 and len(possibleIdentifiers) == 0:
+            elif self.loopInAmount == 1 and not possibleIdentifiers:
                 self.type = "Loop"
             elif self.loopInAmount == 1 and len(possibleIdentifiers) == 1:
                 if self.getLoopInputNode(nodeByID).identifier == possibleIdentifiers[0]:
@@ -48,7 +48,7 @@ class NodeNetwork:
         elif self.type == "Group": owner = self.getGroupInputNode(nodeByID)
         elif self.type == "Loop": owner = self.getLoopInputNode(nodeByID)
 
-        if self.type in ("Group", "Loop", "Script"):
+        if self.type in {"Group", "Loop", "Script"}:
             self.identifier = owner.identifier
             self.name = owner.subprogramName
             self.description = owner.subprogramDescription
@@ -156,9 +156,7 @@ class NodeNetwork:
         except: return None
 
     def getNodeByID(self, nodeID, nodeByID):
-        if nodeByID is None:
-            return idToNode(nodeID)
-        return nodeByID[nodeID]
+        return idToNode(nodeID) if nodeByID is None else nodeByID[nodeID]
 
 
     def getSortedAnimationNodes(self, nodeByID = None):
@@ -175,7 +173,7 @@ class NodeNetwork:
         markedNodeIDs = set()
         temporaryMarkedNodeIDs = set()
         unmarkedNodeIDs = self.nodeIDs.copy()
-        sortedAnimationNodesIDs = list()
+        sortedAnimationNodesIDs = []
 
         nodeTree = self.nodeTree
 

@@ -5,8 +5,8 @@ from ... base_types import AnimationNode
 from ... events import executionCodeChanged
 
 constantItems = [
-    ("Pi", "Pi", str(math.pi)[:10] + "...", "NONE", 0),
-    ("e", "e", str(math.e)[:10] + "...", "NONE", 1)
+    ("Pi", "Pi", f"{str(math.pi)[:10]}...", "NONE", 0),
+    ("e", "e", f"{str(math.e)[:10]}...", "NONE", 1),
 ]
 
 factors = ["1/4", "1/3", "1/2", "1", "2", "3", "4"]
@@ -34,7 +34,7 @@ class NumberConstantsNode(AnimationNode, bpy.types.Node):
     def drawLabel(self):
         if self.factor == "1":
             return self.constant
-        return self.factor + " " + self.constant
+        return f"{self.factor} {self.constant}"
 
     def getExecutionCode(self, required):
         if self.constant == "Pi":
@@ -43,7 +43,7 @@ class NumberConstantsNode(AnimationNode, bpy.types.Node):
             yield "value = math.e"
 
         if self.factor != "1":
-            yield "value *= " + self.factor
+            yield f"value *= {self.factor}"
 
     def getUsedModules(self):
         return ["math"]

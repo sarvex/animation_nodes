@@ -39,8 +39,7 @@ class ColorSocket(bpy.types.NodeSocket, AnimationNodeSocket):
 
     @classmethod
     def correctValue(cls, value):
-        if isinstance(value, Color): return value, 0
-        else: return cls.getDefaultValue(), 2
+        return (value, 0) if isinstance(value, Color) else (cls.getDefaultValue(), 2)
 
 
 class ColorListSocket(bpy.types.NodeSocket, CListSocket):

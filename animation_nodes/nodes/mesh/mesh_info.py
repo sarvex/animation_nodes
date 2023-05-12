@@ -52,15 +52,14 @@ class MeshInfoNode(AnimationNode, bpy.types.Node):
 
     def getBuiltInAttributes(self, name, mesh):
         builtInAttribute = mesh.getBuiltInAttribute(name)
-        if builtInAttribute is None:
-            if name == "Material Indices":
-                data = LongList(length = len(mesh.polygons))
-            elif name == "Bevel Vertex Weights":
-                data = DoubleList(length = len(mesh.vertices))
-            else:
-                data = DoubleList(length = len(mesh.edges))
-            
-            data.fill(0)
-            return data
-        else:
+        if builtInAttribute is not None:
             return builtInAttribute.data
+        if name == "Material Indices":
+            data = LongList(length = len(mesh.polygons))
+        elif name == "Bevel Vertex Weights":
+            data = DoubleList(length = len(mesh.vertices))
+        else:
+            data = DoubleList(length = len(mesh.edges))
+
+        data.fill(0)
+        return data

@@ -52,10 +52,7 @@ def iterPathsWithExtension(basepath, extension):
                 yield os.path.join(root, filename)
 
 def setOfStrings(strings):
-    if isinstance(strings, str):
-        return {strings}
-    else:
-        return set(strings)
+    return {strings} if isinstance(strings, str) else set(strings)
 
 def iterPathsWithFileName(basepath, filename):
     for root, dirs, files in os.walk(basepath):
@@ -98,9 +95,8 @@ def tryGetFileAccessPermission(path):
     try:
         if os.access(path, os.W_OK):
             return False
-        else:
-            os.chmod(path, stat.S_IWUSR)
-            return True
+        os.chmod(path, stat.S_IWUSR)
+        return True
     except:
         return False
 
@@ -143,10 +139,9 @@ def directoryExists(path):
 
 def dependenciesChanged(target, dependencies):
     targetTime = tryGetLastModificationTime(target)
-    for path in dependencies:
-        if tryGetLastModificationTime(path) > targetTime:
-            return True
-    return False
+    return any(
+        tryGetLastModificationTime(path) > targetTime for path in dependencies
+    )
 
 def getNewestPath(paths):
     pathsWithTime = [(path, tryGetLastModificationTime(path)) for path in paths]
@@ -163,7 +158,7 @@ def splitPath(path):
     return pathlib.PurePath(path).parts
 
 def multiReplace(text, **replacements):
-    pattern = "|".join(re.escape(key) for key in replacements.keys())
+    pattern = "|".join(re.escape(key) for key in replacements)
     return re.sub(pattern, lambda m: replacements[m.group(0)], text)
 
 def readLinesBetween(path, start, stop):
@@ -172,14 +167,14 @@ def readLinesBetween(path, start, stop):
         while True:
             line = f.readline()
             if line == "":
-                raise Exception("Line containing '{}' not found in {}".format(start, path))
+                raise Exception(f"Line containing '{start}' not found in {path}")
             if start in line:
                 break
 
         while True:
             line = f.readline()
             if line == "":
-                raise Exception("Line containing '{}' not found in  {}".format(stop, path))
+                raise Exception(f"Line containing '{stop}' not found in  {path}")
             if stop not in line:
                 lines.append(line)
             else:
@@ -254,16 +249,16 @@ def returnChangedFileStates(directory):
     return _returnChangedFileStates
 
 def getAllFilesWithTimestamps(directory):
-    result = {}
-    for path in iterAllFilePathsRecursive(directory):
-        result[path] = tryGetLastModificationTime(path)
-    return result
+    return {
+        path: tryGetLastModificationTime(path)
+        for path in iterAllFilePathsRecursive(directory)
+    }
 
 def getAddonVersion(initPath):
     match = re.search(r'"version"\s*:\s*(\(\s*[0-9]+\s*,\s*[0-9]+\s*,\s*[0-9]+\s*\))', readTextFile(initPath))
     if match is None:
         raise Exception("cannot determine addon version")
-    return eval(match.group(1))
+    return eval(match[1])
 
 
 allFunctions = list(set(globals().keys()) - _globals - {"_globals"})

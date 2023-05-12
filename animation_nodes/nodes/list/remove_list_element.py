@@ -71,10 +71,10 @@ class RemoveListElementNode(AnimationNode, bpy.types.Node):
         self.refresh()
 
     def isAllowedDataType(self, dataType):
-        if self.removeType in ("FIRST_OCCURRENCE", "ALL_OCCURRENCES"):
-            if not isComparable(dataType):
-                return False
-        return True
+        return bool(
+            self.removeType not in ("FIRST_OCCURRENCE", "ALL_OCCURRENCES")
+            or isComparable(dataType)
+        )
 
     def reset_and_show_error(self):
         self.show_type_error(self.assignedType)
@@ -82,5 +82,5 @@ class RemoveListElementNode(AnimationNode, bpy.types.Node):
         self.assignedType = "Integer"
 
     def show_type_error(self, dataType):
-        text = "This list type only supports element removal using an index: '{}'".format(toListDataType(dataType))
+        text = f"This list type only supports element removal using an index: '{toListDataType(dataType)}'"
         showTextPopup(text = text, title = "Error", icon = "ERROR")

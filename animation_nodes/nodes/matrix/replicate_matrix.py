@@ -38,15 +38,17 @@ class ReplicateMatrixNode(AnimationNode, bpy.types.Node):
 
     def getExecutionFunctionName(self):
         if self.transformationType == "MATRIX_LIST":
-            if self.useMatrixList:
-                return "execute_List_Matrices"
-            else:
-                return "execute_Single_Matrices"
+            return (
+                "execute_List_Matrices"
+                if self.useMatrixList
+                else "execute_Single_Matrices"
+            )
         elif self.transformationType == "VECTOR_LIST":
-            if self.useMatrixList:
-                return "execute_List_Vectors"
-            else:
-                return "execute_Single_Vectors"
+            return (
+                "execute_List_Vectors"
+                if self.useMatrixList
+                else "execute_Single_Vectors"
+            )
 
     def execute_Single_Matrices(self, matrix, transformations):
         return replicateMatrixAtMatrices(matrix, transformations)

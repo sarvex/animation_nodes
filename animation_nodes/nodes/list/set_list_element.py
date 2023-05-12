@@ -42,11 +42,10 @@ class SetListElementNode(AnimationNode, bpy.types.Node):
                 yield "if len(list) != 0: list[min(max(index, -len(list)), len(list) - 1)] = element"
             else:
                 yield "if -len(list) <= index < len(list): list[index] = element"
+        elif self.clampIndex:
+            yield "if len(list) != 0: list[min(max(index, 0), len(list) - 1)] = element"
         else:
-            if self.clampIndex:
-                yield "if len(list) != 0: list[min(max(index, 0), len(list) - 1)] = element"
-            else:
-                yield "if 0 <= index < len(list): list[index] = element"
+            yield "if 0 <= index < len(list): list[index] = element"
         yield "else: self.setErrorMessage('Index out of range')"
 
     def assignListDataType(self, listDataType):

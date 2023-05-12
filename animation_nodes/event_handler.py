@@ -19,7 +19,7 @@ def update(events):
     if not problems.canAutoExecute(): return
 
     nodeTrees = list(iterAutoExecutionNodeTrees(events))
-    if len(nodeTrees) == 0: return
+    if not nodeTrees: return
 
     setupExecutionUnits(nodeTrees)
     executeNodeTrees(nodeTrees)
@@ -47,7 +47,9 @@ def didNameChange():
     return False
 
 def getNamesHash():
-    names = set(itertools.chain(
-        (tree.name for tree in getAnimationNodeTrees()),
-        (node.name for node in iterNodesInAnimationNodeTrees())))
-    return names
+    return set(
+        itertools.chain(
+            (tree.name for tree in getAnimationNodeTrees()),
+            (node.name for node in iterNodesInAnimationNodeTrees()),
+        )
+    )

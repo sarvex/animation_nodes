@@ -17,11 +17,7 @@ def updateAutoNodeTreeSelection():
                 space.node_tree = nodeTrees[0]
             else:
                 lastUsedTree = bpy.data.node_groups.get(treeNameBySpace.get(spaceHash, ""))
-                if lastUsedTree is not None:
-                    space.node_tree = lastUsedTree
-                else:
-                    space.node_tree = nodeTrees[0]
-
+                space.node_tree = lastUsedTree if lastUsedTree is not None else nodeTrees[0]
         treeName = getattr(space.node_tree, "name", None)
         if treeName is not None:
             treeNameBySpace[spaceHash] = treeName

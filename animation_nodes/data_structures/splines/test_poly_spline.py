@@ -245,7 +245,7 @@ class TestGetUniformParameters(TestCase):
 
     def testSplineWithLengthZero(self):
         spline = PolySpline()
-        for i in range(10):
+        for _ in range(10):
             spline.appendPoint((3, 4, 5))
         parameters = spline.getUniformParameters(10)
         self.assertEqual(len(parameters), 10)

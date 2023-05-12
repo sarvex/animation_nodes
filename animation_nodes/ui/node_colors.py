@@ -12,8 +12,11 @@ class NetworkColorsMode:
             if not node.useNetworkColor: continue
             node.use_custom_color = True
             color = networkColor
-            if node.bl_idname == "an_InvokeSubprogramNode":
-                if node.subprogramNetwork: color = cls.getNetworkColor(node.subprogramNetwork, nodeByID)
+            if (
+                node.bl_idname == "an_InvokeSubprogramNode"
+                and node.subprogramNetwork
+            ):
+                color = cls.getNetworkColor(node.subprogramNetwork, nodeByID)
             node.color = color
 
     @classmethod
@@ -31,10 +34,7 @@ class NeededCopiesMode:
             node.use_custom_color = True
 
             neededCopies = sum(socket.execution.neededCopies for socket in node.outputs)
-            if neededCopies == 0:
-                color = (0.7, 0.9, 0.7)
-            else:
-                color = (1.0, 0.3, 0.3)
+            color = (0.7, 0.9, 0.7) if neededCopies == 0 else (1.0, 0.3, 0.3)
             node.color = color
 
 

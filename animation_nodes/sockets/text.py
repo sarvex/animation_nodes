@@ -40,9 +40,7 @@ class TextSocket(bpy.types.NodeSocket, AnimationNodeSocket):
 
     @classmethod
     def correctValue(cls, value):
-        if isinstance(value, str):
-            return value, 0
-        return str(value), 1
+        return (value, 0) if isinstance(value, str) else (str(value), 1)
 
 
 class TextListSocket(bpy.types.NodeSocket, PythonListSocket):

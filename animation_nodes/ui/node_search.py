@@ -76,7 +76,7 @@ class SingleNodeInsertionItem:
 
     @property
     def identifier(self):
-        return "single node - " + self.tag
+        return f"single node - {self.tag}"
 
     @property
     def searchTag(self):

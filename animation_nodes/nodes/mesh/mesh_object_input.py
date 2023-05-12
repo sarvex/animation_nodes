@@ -52,7 +52,7 @@ class MeshObjectInputNode(AnimationNode, bpy.types.Node):
 
         yield "sourceMesh = object.an.getMesh(useModifiers) if object else None"
         yield "if sourceMesh is not None:"
-        yield from ("    " + line for line in self.iterGetMeshDataCodeLines(required))
+        yield from (f"    {line}" for line in self.iterGetMeshDataCodeLines(required))
         yield "    if sourceMesh.users == 0: object.to_mesh_clear()"
         yield "else:"
         yield "    meshName = ''"

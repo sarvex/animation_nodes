@@ -31,21 +31,19 @@ class AutoExecutionTrigger_MonitorProperty(bpy.types.PropertyGroup):
         newState = self.getPropertiesState()
         if newState == lastState:
             return False
-        else:
-            self.lastState = newState
-            return self.enabled and lastState != ""
+        self.lastState = newState
+        return self.enabled and lastState != ""
 
     def getPropertiesState(self):
         props = self.getProperties()
         if len(props) == 0: return ""
 
-        propsString = ""
-        for prop in props:
-            if hasattr(prop, "__iter__"):
-                propsString += "".join(str(part) for part in prop)
-            else: propsString += str(prop)
-
-        return propsString
+        return "".join(
+            "".join(str(part) for part in prop)
+            if hasattr(prop, "__iter__")
+            else str(prop)
+            for prop in props
+        )
 
     def getProperties(self):
         self.hasError = False
@@ -66,15 +64,12 @@ class AutoExecutionTrigger_MonitorProperty(bpy.types.PropertyGroup):
         return [p.strip() for p in self.dataPaths.split(",")]
 
     def getIDBlocks(self):
-        if self.idType == "OBJECT":
-            if self.object is None: return []
-            return [self.object]
-        elif self.idType == "COLLECTION":
-            if self.collection is None: return []
-            return self.collection.all_objects
+        if self.idType == "COLLECTION":
+            return [] if self.collection is None else self.collection.all_objects
+        elif self.idType == "OBJECT":
+            return [] if self.object is None else [self.object]
         elif self.idType == "SCENE":
-            if self.scene is None: return []
-            return [self.scene]
+            return [] if self.scene is None else [self.scene]
 
     def draw(self, layout, index):
         box = layout.box()
@@ -83,7 +78,7 @@ class AutoExecutionTrigger_MonitorProperty(bpy.types.PropertyGroup):
         icon = 'TRIA_DOWN' if self.expanded else 'TRIA_RIGHT'
         header.prop(self, "expanded", icon = icon, text = "", emboss = False)
         if self.hasError: header.label(text = "", icon = "ERROR")
-        header.prop(self, "enabled", text = "Enable " + self.dataPaths, toggle = True)
+        header.prop(self, "enabled", text=f"Enable {self.dataPaths}", toggle = True)
         header.operator("an.remove_auto_execution_trigger", icon = "X",
             text = "", emboss = False).index = index
 
@@ -203,10 +198,10 @@ class AssignActiveObjectToAutoExecutionTrigger(bpy.types.Operator):
     def execute(self, context):
         tree = context.space_data.node_tree
         trigger = tree.autoExecution.customTriggers.monitorPropertyTriggers[self.index]
-        if trigger.idType == "OBJECT":
-            trigger.object = context.active_object
         if trigger.idType == "COLLECTION":
             trigger.collection = context.collection
-        if trigger.idType == "SCENE":
+        elif trigger.idType == "OBJECT":
+            trigger.object = context.active_object
+        elif trigger.idType == "SCENE":
             trigger.scene = context.scene
         return {"FINISHED"}

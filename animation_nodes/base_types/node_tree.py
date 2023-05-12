@@ -75,9 +75,8 @@ class AnimationNodeTree(bpy.types.NodeTree):
             if events.intersection({"File", "Addon"}) and any(
                 (a.always, a.sceneChanged, a.frameChanged, a.propertyChanged, a.treeChanged)): return True
 
-            if not isViewportRendering() or isAnimationPlaying():
-                if a.always: return True
-
+            if (not isViewportRendering() or isAnimationPlaying()) and a.always:
+                return True
         return customTriggerHasBeenActivated
 
     def autoExecute(self):
@@ -102,9 +101,9 @@ class AnimationNodeTree(bpy.types.NodeTree):
             success = unit.execute()
             if not success:
                 allExecutionsSuccessfull = False
-        end = time.perf_counter()
-
         if allExecutionsSuccessfull:
+            end = time.perf_counter()
+
             self.lastExecutionInfo.executionTime = end - start
             self.lastExecutionInfo.updateVersions()
 

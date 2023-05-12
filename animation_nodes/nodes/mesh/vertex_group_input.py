@@ -56,13 +56,10 @@ class VertexGroupInputNode(AnimationNode, bpy.types.Node):
         layout.prop(self, "groupIdentifierType", text = "Type")
 
     def getExecutionFunctionName(self):
-        if self.mode == "INDEX":
-            if self.useIndexList:
-                return "execute_Indices"
-            else:
-                return "execute_Index"
-        elif self.mode == "ALL":
+        if self.mode == "ALL":
             return "execute_All"
+        elif self.mode == "INDEX":
+            return "execute_Indices" if self.useIndexList else "execute_Index"
 
     def execute_Index(self, object, identifier, index):
         if object is None:

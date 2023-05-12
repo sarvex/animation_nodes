@@ -66,13 +66,12 @@ class IDKeyPanel(bpy.types.Panel):
 
             props = right.operator("an.remove_id_key_on_selected_objects",
                                    text = "", icon = "X", emboss = False)
-            props.dataType = idKey.type
-            props.propertyName = idKey.name
         else:
             props = right.operator("an.create_id_key_on_selected_objects",
                                    text = "", icon = "PLUS", emboss = False)
-            props.dataType = idKey.type
-            props.propertyName = idKey.name
+
+        props.propertyName = idKey.name
+        props.dataType = idKey.type
 
 @makeOperator("an.create_id_key_on_selected_objects",
               "Create ID Key", arguments = ["String", "String"],

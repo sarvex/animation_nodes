@@ -602,10 +602,20 @@ class AnimationMenu(bpy.types.Menu):
         insertNode(layout, "an_RepeatTimeNode", "Repeat")
         layout.separator()
         for dataType in numericalDataTypes:
-            insertNode(layout, "an_AnimateDataNode", "Animate " + dataType, {"dataType" : repr(dataType)})
+            insertNode(
+                layout,
+                "an_AnimateDataNode",
+                f"Animate {dataType}",
+                {"dataType": repr(dataType)},
+            )
         layout.separator()
         for dataType in numericalDataTypes:
-            insertNode(layout, "an_MixDataListNode", "Mix " + dataType + " List", {"dataType" : repr(dataType)})
+            insertNode(
+                layout,
+                "an_MixDataListNode",
+                f"Mix {dataType} List",
+                {"dataType": repr(dataType)},
+            )
 
 class InterpolationMenu(bpy.types.Menu):
     bl_idname = "AN_MT_interpolation_menu"
@@ -778,7 +788,12 @@ class SubprogramsMenu(bpy.types.Menu):
             layout.label(text = "   There are no subprograms yet")
         else:
             for network in sorted(subprograms, key = lambda x: x.name.lower()):
-                insertNode(layout, "an_InvokeSubprogramNode", "-  " + network.name, {"subprogramIdentifier" : repr(network.identifier)})
+                insertNode(
+                    layout,
+                    "an_InvokeSubprogramNode",
+                    f"-  {network.name}",
+                    {"subprogramIdentifier": repr(network.identifier)},
+                )
         layout.separator()
         insertNode(layout, "an_GroupInputNode", "Group")
         insertNode(layout, "an_LoopInputNode", "Loop")

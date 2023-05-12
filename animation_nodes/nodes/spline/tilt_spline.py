@@ -33,15 +33,15 @@ class TiltSplineNode(AnimationNode, bpy.types.Node):
 
     def getExecutionFunctionName(self):
         if self.useSplineList:
-            if self.useTiltList:
-                return "execute_MultipleSplines_MultipleTilts"
-            else:
-                return "execute_MultipleSplines_SingleTilt"
+            return (
+                "execute_MultipleSplines_MultipleTilts"
+                if self.useTiltList
+                else "execute_MultipleSplines_SingleTilt"
+            )
+        if self.useTiltList:
+            return "execute_SingleSpline_MultipleTilts"
         else:
-            if self.useTiltList:
-                return "execute_SingleSpline_MultipleTilts"
-            else:
-                return "execute_SingleSpline_SingleTilt"
+            return "execute_SingleSpline_SingleTilt"
 
     def execute_MultipleSplines_MultipleTilts(self, splines, tilts):
         for spline in splines:

@@ -81,7 +81,7 @@ class Viewer3DNode(AnimationNode, bpy.types.Node):
         if isinstance(data, Vector2DList):
             vectors = convert_Vector2DList_to_Vector3DList(data)
             dataByIdentifier[self.identifier] = DrawData(vectors, self.drawVectors)
-        elif isinstance(data, Vector) and len(data) in (2, 3):
+        elif isinstance(data, Vector) and len(data) in {2, 3}:
             vector = data.to_3d()
             dataByIdentifier[self.identifier] = DrawData(Vector3DList.fromValues([vector]), self.drawVectors)
         elif isinstance(data, Matrix4x4List):

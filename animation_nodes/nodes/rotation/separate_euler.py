@@ -33,9 +33,9 @@ class SeparateEulerNode(AnimationNode, bpy.types.Node):
                 if self.useList:
                     yield "{0} = self.getAxisList(eulers, '{0}')".format(axis)
                 else:
-                    yield "{} = euler[{}]".format(axis, i)
+                    yield f"{axis} = euler[{i}]"
                     if self.useDegree:
-                        yield "{} *= 180 / math.pi".format(axis)
+                        yield f"{axis} *= 180 / math.pi"
 
     def getAxisList(self, eulers, axis):
         return getAxisListOfEulerList(eulers, axis, self.useDegree)

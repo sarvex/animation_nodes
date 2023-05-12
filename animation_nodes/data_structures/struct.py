@@ -15,5 +15,5 @@ class ANStruct(dict):
         return [name for _dataType, name in self.keys() if dataType == _dataType]
 
     def __repr__(self):
-        elements = [repr(name) + ": " + str(value) for (_, name), value in self.items()]
-        return "<AN Struct: {} >".format(", ".join(elements))
+        elements = [f"{repr(name)}: {str(value)}" for (_, name), value in self.items()]
+        return f'<AN Struct: {", ".join(elements)} >'

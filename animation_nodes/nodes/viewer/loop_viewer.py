@@ -47,23 +47,24 @@ class LoopViewerNode(AnimationNode, bpy.types.Node):
     def drawAdvanced(self, layout):
         col = layout.column(align = True)
         for i, socket in enumerate(self.inputs[:-1]):
-            col.prop(socket, '["dataWidth"]', text = "Width " + str(i + 1))
+            col.prop(socket, '["dataWidth"]', text=f"Width {str(i + 1)}")
 
     def getInputSocketVariables(self):
-        return {socket.identifier : "data_" + str(i) for i, socket in enumerate(self.inputs)}
+        return {
+            socket.identifier: f"data_{str(i)}"
+            for i, socket in enumerate(self.inputs)
+        }
 
     def getExecutionCode(self, required):
-        if self.network.type == "Loop":
-            names = ["data_" + str(i) for i in range(len(self.inputs[:-1]))]
-            return "self.newOutputLine({})".format(", ".join(names))
-        else:
+        if self.network.type != "Loop":
             return ""
+        names = [f"data_{str(i)}" for i in range(len(self.inputs[:-1]))]
+        return f'self.newOutputLine({", ".join(names)})'
 
     def newOutputLine(self, *dataList):
         texts = []
         for data, socket in zip(dataList, self.inputs):
-            if isinstance(data, float): text = str(round(data, 5))
-            else: text = str(data)
+            text = str(round(data, 5)) if isinstance(data, float) else str(data)
             texts.append(text.rjust(socket["dataWidth"]))
         outputLinesByIdentifier[self.identifier].append(" ".join(texts))
 

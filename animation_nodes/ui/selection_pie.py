@@ -8,9 +8,7 @@ class SelectionPie(bpy.types.Menu, PieMenuHelper):
     @classmethod
     def poll(cls, context):
         tree = context.getActiveAnimationNodeTree()
-        if tree is None: return False
-        if tree.nodes.active is None: return False
-        return True
+        return False if tree is None else tree.nodes.active is not None
 
     def drawLeft(self, layout):
         layout.operator("an.select_dependencies")

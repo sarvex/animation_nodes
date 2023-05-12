@@ -20,8 +20,7 @@ class PolygonIndicesSocket(bpy.types.NodeSocket, AnimationNodeSocket):
 
     @classmethod
     def correctValue(cls, value):
-        if isPolygon(value): return value, 0
-        else: return cls.getDefaultValue(), 2
+        return (value, 0) if isPolygon(value) else (cls.getDefaultValue(), 2)
 
 
 class PolygonIndicesListSocket(bpy.types.NodeSocket, ListSocket):

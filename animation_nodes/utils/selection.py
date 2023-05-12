@@ -3,10 +3,7 @@ import bpy
 sortedSelectionNames = []
 
 def getSortedSelectedObjects():
-    objects = []
-    for name in getSortedSelectedObjectNames():
-        objects.append(bpy.data.objects.get(name))
-    return objects
+    return [bpy.data.objects.get(name) for name in getSortedSelectedObjectNames()]
 
 def getSortedSelectedObjectNames():
     return sortedSelectionNames
@@ -16,13 +13,10 @@ def updateSelectionSorting(viewLayer):
 
     selectedNames = getSelectedObjectNames(viewLayer)
 
-    newSortedSelection = []
-
     selectedNamesSet = set(selectedNames)
-    for name in sortedSelectionNames:
-        if name in selectedNamesSet:
-            newSortedSelection.append(name)
-
+    newSortedSelection = [
+        name for name in sortedSelectionNames if name in selectedNamesSet
+    ]
     for name in selectedNames:
         if name not in newSortedSelection:
             newSortedSelection.append(name)

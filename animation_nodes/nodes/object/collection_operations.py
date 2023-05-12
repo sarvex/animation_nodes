@@ -23,10 +23,8 @@ class CollectionOperationsNode(AnimationNode, bpy.types.Node):
     def executeSingleObject(self, collection, object, linked):
         if collection is None: return collection
         if object is None: return collection
-        
+
         if object.name in collection.objects:
             if not linked: collection.objects.unlink(object)
-        else:
-            if linked: collection.objects.link(object)
-
+        elif linked: collection.objects.link(object)
         return collection

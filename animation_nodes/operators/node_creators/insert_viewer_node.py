@@ -25,9 +25,10 @@ class InsertViewerNode(bpy.types.Operator, NodeCreator):
                 yield socket
 
     def insert(self):
-        activeNode = self.activeNode
+        if self.usedMenu:
+            activeNode = self.activeNode
 
-        if self.usedMenu: socket = activeNode.outputs[self.socketIndex]
+            if self.usedMenu: socket = activeNode.outputs[self.socketIndex]
         else:
             try: socket = self.iterPossibleSockets().__next__()
             except: return

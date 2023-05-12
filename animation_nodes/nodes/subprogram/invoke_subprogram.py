@@ -42,49 +42,56 @@ class InvokeSubprogramNode(AnimationNode, bpy.types.Node):
 
     def create(self):
         subprogram = self.subprogramNode
-        if subprogram is not None:
-            if subprogram.network.type != "Invalid":
-                subprogram.getSocketData().apply(self)
+        if subprogram is not None and subprogram.network.type != "Invalid":
+            subprogram.getSocketData().apply(self)
         self.checkCachingPossibilities()
         self.clearCache()
 
     def drawLabel(self):
         network = self.subprogramNetwork
-        if network is not None:
-            return "<" + network.name + ">"
-        return "Invoke Subprogram"
+        return f"<{network.name}>" if network is not None else "Invoke Subprogram"
 
     def getInputSocketVariables(self):
-        return {socket.identifier : "input_" + str(i) for i, socket in enumerate(self.inputs)}
+        return {
+            socket.identifier: f"input_{str(i)}"
+            for i, socket in enumerate(self.inputs)
+        }
 
     def getOutputSocketVariables(self):
-        return {socket.identifier : "output_" + str(i) for i, socket in enumerate(self.outputs)}
+        return {
+            socket.identifier: f"output_{str(i)}"
+            for i, socket in enumerate(self.outputs)
+        }
 
     def getExecutionCode(self, required):
         if self.subprogramNode is None: return ""
 
-        parameterString = ", ".join(["input_" + str(i) for i in range(len(self.inputs))])
-        invokeString = "_subprogram{}({})".format(self.subprogramIdentifier, parameterString)
-        outputString = ", ".join(["output_" + str(i) for i in range(len(self.outputs))])
+        parameterString = ", ".join(
+            [f"input_{str(i)}" for i in range(len(self.inputs))]
+        )
+        invokeString = f"_subprogram{self.subprogramIdentifier}({parameterString})"
+        outputString = ", ".join(
+            [f"output_{str(i)}" for i in range(len(self.outputs))]
+        )
 
         if self.cacheType == "DISABLED" or not self.canCache:
-            if outputString == "": return invokeString
-            else: return "{} = {}".format(outputString, invokeString)
-        else:
-            lines = []
-            lines.append("useCache, groupOutputData = self.getCachedData({})".format(parameterString))
-            lines.append("if not useCache:")
-            lines.append("    groupOutputData = _subprogram{}({})".format(self.subprogramIdentifier, parameterString))
-            lines.append("    self.setCacheData(groupOutputData, {})".format(parameterString))
-            if outputString != "": lines.append("{} = groupOutputData".format(outputString))
-            return lines
+            return invokeString if not outputString else f"{outputString} = {invokeString}"
+        lines = [
+            f"useCache, groupOutputData = self.getCachedData({parameterString})",
+            "if not useCache:",
+            f"    groupOutputData = _subprogram{self.subprogramIdentifier}({parameterString})",
+            f"    self.setCacheData(groupOutputData, {parameterString})",
+        ]
+        if outputString != "":
+            lines.append(f"{outputString} = groupOutputData")
+        return lines
 
     def getCachedData(self, *args):
-        if self.cacheType == "ONE_TIME":
-            try: return True, oneTimeCache[self.identifier]
-            except: pass
         if self.cacheType == "FRAME_BASED":
             try: return True, frameBasedCache[self.identifier][str(self.nodeTree.scene.frame_current)]
+            except: pass
+        elif self.cacheType == "ONE_TIME":
+            try: return True, oneTimeCache[self.identifier]
             except: pass
         if self.cacheType == "INPUT_BASED":
             try: return True, inputBasedCache[self.subprogramIdentifier][self.getArgsHash(args)]
@@ -168,8 +175,11 @@ class InvokeSubprogramNode(AnimationNode, bpy.types.Node):
     def canCache(self):
         if self.cacheType == "DISABLED": return True
         if self.cacheType in ("ONE_TIME", "FRAME_BASED") and self.isOutputStorable: return True
-        if self.cacheType == "INPUT_BASED" and self.isInputComparable and self.isOutputStorable: return True
-        return False
+        return bool(
+            self.cacheType == "INPUT_BASED"
+            and self.isInputComparable
+            and self.isOutputStorable
+        )
 
 
 class ChangeSubprogram(bpy.types.Operator):
@@ -178,10 +188,10 @@ class ChangeSubprogram(bpy.types.Operator):
     bl_description = "Change Subprogram"
 
     def getSubprogramItems(self, context):
-        items = []
-        for network in getSubprogramNetworks():
-            items.append((network.identifier, network.name, network.description))
-        return items
+        return [
+            (network.identifier, network.name, network.description)
+            for network in getSubprogramNetworks()
+        ]
 
     nodeIdentifier: StringProperty()
     subprogram: EnumProperty(name = "Subprogram", items = cacheEnumItems(getSubprogramItems))
@@ -205,9 +215,8 @@ class ChangeSubprogram(bpy.types.Operator):
         layout = self.layout
         layout.prop(self, "subprogram", expand = self.expandSubprograms)
 
-        network = getNetworkByIdentifier(self.subprogram)
-        if network:
-            layout.label(text = "Desription: " + network.description)
+        if network := getNetworkByIdentifier(self.subprogram):
+            layout.label(text=f"Desription: {network.description}")
             layout.separator()
             if network.type == "Group":
                 socketData = network.getGroupInputNode().getSocketData()
@@ -229,7 +238,7 @@ class ChangeSubprogram(bpy.types.Operator):
         for data in sockets:
             row = col.row()
             row.label(text = " "*8 + data.text)
-            row.label(text = "<  {}  >".format(toDataType(data.idName)))
+            row.label(text=f"<  {toDataType(data.idName)}  >")
 
     @property
     def expandSubprograms(self):

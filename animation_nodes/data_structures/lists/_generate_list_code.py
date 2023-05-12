@@ -38,12 +38,10 @@ def getPyPreprocessTasks(PyPreprocessTask, utils):
 def generate_pyx(target, utils):
     implementation = utils.readTextFile(paths["implementation"])
 
-    parts = []
-    parts.append("cdef struct NotExistentType:\n    char tmp")
-
+    parts = ["cdef struct NotExistentType:\n    char tmp"]
     for info in getListInfo(utils):
         listCode = implementation.replace("MORE_METHODS", indent(info["MORE_METHODS"], " "*4))
-        listCode = re.sub("EQUALS\((.*), (.*)\)", "({})".format(info["EQUALS"]), listCode)
+        listCode = re.sub("EQUALS\((.*), (.*)\)", f'({info["EQUALS"]})', listCode)
         listCode = utils.multiReplace(listCode,
             LISTNAME = info["LISTNAME"],
             TYPE = info["TYPE"],
@@ -59,14 +57,10 @@ def generate_pxd(target, utils):
     declaration = utils.readTextFile(paths["declaration"])
     numericLists = utils.readJsonFile(paths["numericLists"])
 
-    parts = []
-    parts.append("ctypedef fused list_or_tuple:\n    list\n    tuple")
-
     fusedTypeCode = "ctypedef fused NumericList:\n"
     for listName, _ in numericLists:
-        fusedTypeCode += "    " + listName + "\n"
-    parts.append(fusedTypeCode)
-
+        fusedTypeCode += f"    {listName}" + "\n"
+    parts = ["ctypedef fused list_or_tuple:\n    list\n    tuple", fusedTypeCode]
     for info in getListInfo(utils):
         parts.extend(info["DECLARATIONS"])
         parts.append(utils.multiReplace(declaration,

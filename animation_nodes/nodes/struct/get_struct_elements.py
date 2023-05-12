@@ -47,35 +47,38 @@ class GetStructElementsNode(AnimationNode, bpy.types.Node):
         return socket
 
     def getOutputSocketVariables(self):
-        variables = {socket.identifier : "output_" + str(i) for i, socket in enumerate(self.outputs[:-1])}
+        variables = {
+            socket.identifier: f"output_{str(i)}"
+            for i, socket in enumerate(self.outputs[:-1])
+        }
         variables["New Output"] = "newOutput"
         return variables
 
     def getExecutionCode(self, required):
         for i, socket in enumerate(self.outputs[:-1]):
-            name = "output_" + str(i)
-            structAccess = "struct[({}, {})]".format(repr(socket.dataType), repr(socket.text))
+            name = f"output_{str(i)}"
+            structAccess = f"struct[({repr(socket.dataType)}, {repr(socket.text)})]"
 
             yield "try:"
             if socket.isCopyable() and self.makeCopies:
-                yield "    {} = {}".format(name, socket.getCopyExpression().replace("value", structAccess))
+                yield f'    {name} = {socket.getCopyExpression().replace("value", structAccess)}'
             else:
-                yield "    {} = {}".format(name, structAccess)
+                yield f"    {name} = {structAccess}"
 
             yield "except:"
-            yield "    socket = self.outputs[{}]".format(i)
+            yield f"    socket = self.outputs[{i}]"
             yield "    self.raiseErrorMessage(self.getDetailedErrorMessage(struct, socket))"
 
     def getDetailedErrorMessage(self, struct, socket):
         possibleDataTypes = struct.findDataTypesWithName(socket.text)
-        if len(possibleDataTypes) == 0:
-            possibleNames = struct.findNamesWithDataType(socket.dataType)
-            if len(possibleNames) == 0:
-                return "Name {} does not exist".format(repr(socket.text))
-            else:
-                return "Name {} does not exist.\nOther names with type {}: {}".format(repr(socket.text), repr(socket.dataType), possibleNames)
-        else:
-            return "Name {} only exists with these data types: {}".format(repr(socket.text), possibleDataTypes)
+        if len(possibleDataTypes) != 0:
+            return f"Name {repr(socket.text)} only exists with these data types: {possibleDataTypes}"
+        possibleNames = struct.findNamesWithDataType(socket.dataType)
+        return (
+            f"Name {repr(socket.text)} does not exist"
+            if len(possibleNames) == 0
+            else f"Name {repr(socket.text)} does not exist.\nOther names with type {repr(socket.dataType)}: {possibleNames}"
+        )
 
     def socketChanged(self):
         executionCodeChanged()

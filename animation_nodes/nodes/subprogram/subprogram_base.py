@@ -31,8 +31,8 @@ class SubprogramBaseNode:
         self.networkColor = getRandomColor(value = value, saturation = saturation)
 
     def getInvokeNodes(self):
-        nodes = []
-        for node in getNodesByType("an_InvokeSubprogramNode"):
-            if node.subprogramIdentifier == self.identifier:
-                nodes.append(node)
-        return nodes
+        return [
+            node
+            for node in getNodesByType("an_InvokeSubprogramNode")
+            if node.subprogramIdentifier == self.identifier
+        ]

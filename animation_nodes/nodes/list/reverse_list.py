@@ -16,7 +16,7 @@ class ReverseListNode(AnimationNode, bpy.types.Node):
             "Reversed List", "reversedList", "LIST", prop))
 
     def getExecutionCode(self, required):
-        yield "reversedList = AN.algorithms.lists.reverse('%s', inList)" % self.assignedType
+        yield f"reversedList = AN.algorithms.lists.reverse('{self.assignedType}', inList)"
 
     def assignType(self, listDataType):
         if not isList(listDataType): return

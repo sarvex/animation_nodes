@@ -19,7 +19,7 @@ class ForestData:
         self.linkedSocketsWithReroutes = defaultdict(list)
         self.reroutePairs = defaultdict(list)
 
-        self.dataTypeBySocket = dict()
+        self.dataTypeBySocket = {}
 
     def update(self):
         self._reset()
@@ -57,9 +57,7 @@ class ForestData:
             if node.bl_idname == "NodeReroute":
                 reroutePairs[inputIDs[0]] = outputIDs[0]
                 reroutePairs[outputIDs[0]] = inputIDs[0]
-            elif node.bl_idname == "NodeFrame":
-                pass
-            else:
+            elif node.bl_idname != "NodeFrame":
                 if node.bl_idname != "NodeUndefined":
                     animationNodes.add(nodeID)
                     nodeByIdentifier[node.identifier] = nodeID
@@ -104,7 +102,7 @@ class ForestData:
         for socket in self.linkedSocketsWithReroutes[socket]:
             if socket[0] in self.rerouteNodes:
                 if socket[0] in visitedReroutes:
-                    print("Reroute recursion detected in: {}".format(repr(socket[0][0])))
+                    print(f"Reroute recursion detected in: {repr(socket[0][0])}")
                     return
                 visitedReroutes.add(socket[0])
                 yield from self.iterLinkedSockets(self.reroutePairs[socket], visitedReroutes)

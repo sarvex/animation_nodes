@@ -33,5 +33,6 @@ class RenameDatablockPopupOperator(bpy.types.Operator):
         return {"FINISHED"}
 
     def getDatablock(self):
-        try: return eval(self.path + "[{}]".format(repr(self.oldName)))
+        try:
+            return eval(f"{self.path}[{repr(self.oldName)}]")
         except: return None

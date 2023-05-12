@@ -65,8 +65,7 @@ def parseMetaEvent(deltaTime, memoryMap):
     eventType = struct.unpack("B", memoryMap.read(1))[0]
     length = unpackVLQ(memoryMap)
     eventClass = metaEventByType[eventType]
-    event = eventClass.fromMemoryMap(deltaTime, length, memoryMap)
-    return event
+    return eventClass.fromMemoryMap(deltaTime, length, memoryMap)
 
 def parseSysExEvent(deltaTime, status, memoryMap):
     length = unpackVLQ(memoryMap)
@@ -85,7 +84,7 @@ def parseEvent(memoryMap, parseState):
     runningStatus = parseState.runningStatus
     if runningStatus == 0xFF:
         return parseMetaEvent(deltaTime, memoryMap)
-    elif runningStatus == 0xF0 or runningStatus == 0xF7:
+    elif runningStatus in [0xF0, 0xF7]:
         return parseSysExEvent(deltaTime, runningStatus, memoryMap)
     elif runningStatus >= 0x80:
         return parseChannelEvent(deltaTime, runningStatus, memoryMap)
@@ -105,8 +104,7 @@ def parseEvents(memoryMap):
 
 def parseTrackHeader(memoryMap):
     identifier = memoryMap.read(4).decode('ascii')
-    chunkLength = struct.unpack(">I", memoryMap.read(4))[0]
-    return chunkLength
+    return struct.unpack(">I", memoryMap.read(4))[0]
 
 @dataclass
 class MidiTrack:
@@ -127,7 +125,7 @@ def parseHeader(memoryMap):
     return midiFormat, tracksCount, ppqn
 
 def parseTracks(memoryMap, tracksCount):
-    return [MidiTrack.fromMemoryMap(memoryMap) for i in range(tracksCount)]
+    return [MidiTrack.fromMemoryMap(memoryMap) for _ in range(tracksCount)]
 
 @dataclass
 class MidiFile:

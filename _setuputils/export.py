@@ -14,7 +14,7 @@ def execute_Export(addonDirectory, exportPath, addonName):
             zipFile.write(absolutePath, os.path.join(addonName, relativePath))
 
     print("Exported Addon:")
-    print("    " + exportPath)
+    print(f"    {exportPath}")
 
 def execute_ExportC(addonDirectory, exportCPath, exportCSetupPath, addonName):
     removeFile(exportCPath)
@@ -38,7 +38,7 @@ def execute_ExportC(addonDirectory, exportCPath, exportCSetupPath, addonName):
         zipFile.write(exportCSetupPath, os.path.join(topdir, "setup.py"))
 
     print("Exported C Build:")
-    print("    " + exportCPath)
+    print(f"    {exportCPath}")
 
 def execute_ExportHeaders(addonDirectory, exportHeadersPath, addonName):
     removeFile(exportHeadersPath)
@@ -61,4 +61,4 @@ def execute_ExportHeaders(addonDirectory, exportHeadersPath, addonName):
             zipFile.writestr(arcpath, bytes())
 
     print("Exported Headers:")
-    print("    " + exportHeadersPath)
+    print(f"    {exportHeadersPath}")

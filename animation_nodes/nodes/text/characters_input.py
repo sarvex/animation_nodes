@@ -16,11 +16,11 @@ class CharactersNode(AnimationNode, bpy.types.Node):
 
     def getExecutionCode(self, required):
         if "lower" in required:
-            yield "lower = '{}'".format(string.ascii_lowercase)
+            yield f"lower = '{string.ascii_lowercase}'"
         if "upper" in required:
-            yield "upper = '{}'".format(string.ascii_uppercase)
+            yield f"upper = '{string.ascii_uppercase}'"
         if "digits" in required:
-            yield "digits = '{}'".format(string.digits)
+            yield f"digits = '{string.digits}'"
         if "special" in required:
             yield "special = '!$%&/\\()=?*+#\\'-_.:,;\"'"
         if "lineBreak" in required:

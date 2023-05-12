@@ -20,9 +20,7 @@ class MeshSocket(bpy.types.NodeSocket, AnimationNodeSocket):
 
     @classmethod
     def correctValue(cls, value):
-        if isinstance(value, Mesh):
-            return value, 0
-        return cls.getDefaultValue(), 2
+        return (value, 0) if isinstance(value, Mesh) else (cls.getDefaultValue(), 2)
 
 
 class MeshListSocket(bpy.types.NodeSocket, PythonListSocket):
@@ -40,7 +38,8 @@ class MeshListSocket(bpy.types.NodeSocket, PythonListSocket):
 
     @classmethod
     def correctValue(cls, value):
-        if isinstance(value, list):
-            if all(isinstance(element, Mesh) for element in value):
-                return value, 0
+        if isinstance(value, list) and all(
+            isinstance(element, Mesh) for element in value
+        ):
+            return value, 0
         return cls.getDefaultValue(), 2

@@ -41,12 +41,8 @@ def getMeasurementsDict():
 
 def getMinExecutionTimeString(node):
     measure = measurementsByNodeIdentifier[node.identifier]
-    if measure.calls > 0:
-        return prettyTime(measure.minTime)
-    else:
-        return "Not Measured"
+    return prettyTime(measure.minTime) if measure.calls > 0 else "Not Measured"
 
 def getMeasurementResultString(node):
     result = measurementsByNodeIdentifier[node.identifier]
-    if result.calls == 0: return "Not Measured"
-    else: return str(result)
+    return "Not Measured" if result.calls == 0 else str(result)

@@ -59,9 +59,8 @@ class GetListElementNode(AnimationNode, bpy.types.Node):
             dataTypes = "LIST", text = "Change Type", icon = "TRIA_RIGHT")
 
     def drawLabel(self):
-        if not self.useIndexList:
-            if self.inputs["Index"].isUnlinked:
-                return "List[{}]".format(self.inputs["Index"].value)
+        if not self.useIndexList and self.inputs["Index"].isUnlinked:
+            return f'List[{self.inputs["Index"].value}]'
         return "Get List Element"
 
     def getExecutionCode(self, required):
@@ -84,22 +83,22 @@ class GetListElementNode(AnimationNode, bpy.types.Node):
         yield "    length = len(inList)"
         yield "    elements = self.outputs[0].getDefaultValue()"
         yield "    for i in indices:"
-        yield "        elements.append({})".format(self.getGetElementCode("i", "length"))
+        yield f'        elements.append({self.getGetElementCode("i", "length")})'
         yield "else:"
         fromFallbackCode = self.sockets[0].getFromValuesCode().replace("value", "[fallback]")
-        yield "    elements = {} * len(indices)".format(fromFallbackCode)
+        yield f"    elements = {fromFallbackCode} * len(indices)"
 
     def getGetElementCode(self, index, length):
         if self.allowNegativeIndex:
-            if self.clampIndex:
-                code = "inList[min(max({index}, -{length}), {length} - 1)]"
-            else:
-                code = "inList[{index}] if -{length} <= {index} < {length} else fallback"
+            code = (
+                "inList[min(max({index}, -{length}), {length} - 1)]"
+                if self.clampIndex
+                else "inList[{index}] if -{length} <= {index} < {length} else fallback"
+            )
+        elif self.clampIndex:
+            code = "inList[min(max({index}, 0), {length} - 1)]"
         else:
-            if self.clampIndex:
-                code = "inList[min(max({index}, 0), {length} - 1)]"
-            else:
-                code = "inList[{index}] if 0 <= {index} < {length} else fallback"
+            code = "inList[{index}] if 0 <= {index} < {length} else fallback"
         return code.format(index = index, length = length)
 
     def assignListDataType(self, listDataType):

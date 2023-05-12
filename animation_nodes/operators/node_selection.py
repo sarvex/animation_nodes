@@ -5,9 +5,7 @@ class NodeOperator:
     @classmethod
     def poll(cls, context):
         tree = context.getActiveAnimationNodeTree()
-        if tree is None: return False
-        if tree.nodes.active is None: return False
-        return True
+        return False if tree is None else tree.nodes.active is not None
 
 class SelectDependentNodes(bpy.types.Operator, NodeOperator):
     bl_idname = "an.select_dependent_nodes"

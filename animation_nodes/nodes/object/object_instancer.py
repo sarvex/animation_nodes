@@ -33,10 +33,12 @@ containerTypeItems = (
         "Animation Nodes in all input scenes", 2),
 )
 
-emptyDisplayTypeItems = []
-for item in bpy.types.Object.bl_rna.properties["empty_display_type"].enum_items:
-    emptyDisplayTypeItems.append((item.identifier, item.name, ""))
-
+emptyDisplayTypeItems = [
+    (item.identifier, item.name, "")
+    for item in bpy.types.Object.bl_rna.properties[
+        "empty_display_type"
+    ].enum_items
+]
 class ObjectPropertyGroup(bpy.types.PropertyGroup):
     bl_idname = "an_ObjectPropertyGroup"
     object: PointerProperty(type = bpy.types.Object, name = "Object")
@@ -134,9 +136,11 @@ class ObjectInstancerNode(AnimationNode, bpy.types.Node):
             return []
         else:
             sourceHash = hash(sourceObject)
-            if self.identifier in lastSourceHashes:
-                if lastSourceHashes[self.identifier] != sourceHash:
-                    self.removeAllObjects()
+            if (
+                self.identifier in lastSourceHashes
+                and lastSourceHashes[self.identifier] != sourceHash
+            ):
+                self.removeAllObjects()
             lastSourceHashes[self.identifier] = sourceHash
 
         return self.getInstances_Base(instancesAmount, sourceObject, containers)
@@ -151,10 +155,12 @@ class ObjectInstancerNode(AnimationNode, bpy.types.Node):
             self.removeAllObjects()
             return []
         else:
-            containerHashes = set(hash(container) for container in containers)
-            if self.identifier in lastContainerHashes:
-                if lastContainerHashes[self.identifier] != containerHashes:
-                    self.removeAllObjects()
+            containerHashes = {hash(container) for container in containers}
+            if (
+                self.identifier in lastContainerHashes
+                and lastContainerHashes[self.identifier] != containerHashes
+            ):
+                self.removeAllObjects()
             lastContainerHashes[self.identifier] = containerHashes
 
         if self.resetInstances:
@@ -227,7 +233,7 @@ class ObjectInstancerNode(AnimationNode, bpy.types.Node):
 
     def createNewObjects(self, amount, sourceObject, containers):
         objects = []
-        nameSuffix = "instance_{}_".format(getRandomString(5))
+        nameSuffix = f"instance_{getRandomString(5)}_"
         for i in range(amount):
             name = nameSuffix + str(i)
             newObject = self.appendNewObject(name, sourceObject, containers)
@@ -285,26 +291,24 @@ class ObjectInstancerNode(AnimationNode, bpy.types.Node):
                 data = sourceObject.data.copy()
             else:
                 return sourceObject.data
-        else:
-            if self.objectType == "MESH":
-                data = bpy.data.meshes.new(getPossibleMeshName("instance mesh"))
-            elif self.objectType == "TEXT":
-                data = bpy.data.curves.new(getPossibleCurveName("instance text"), type = "FONT")
-            elif self.objectType == "CAMERA":
-                data = bpy.data.cameras.new(getPossibleCameraName("instance camera"))
-            elif self.objectType == "POINT_LAMP":
-                data = bpy.data.lights.new(getPossibleLightName("instance lamp"), type = "POINT")
-            elif self.objectType.startswith("CURVE"):
-                data = bpy.data.curves.new(getPossibleCurveName("instance curve"), type = "CURVE")
-                data.dimensions = self.objectType[-2:]
-            elif self.objectType == "GREASE_PENCIL":
-                data = bpy.data.grease_pencils.new(getPossibleGreasePencilName("instance grease pencil"))
+        elif self.objectType == "MESH":
+            data = bpy.data.meshes.new(getPossibleMeshName("instance mesh"))
+        elif self.objectType == "TEXT":
+            data = bpy.data.curves.new(getPossibleCurveName("instance text"), type = "FONT")
+        elif self.objectType == "CAMERA":
+            data = bpy.data.cameras.new(getPossibleCameraName("instance camera"))
+        elif self.objectType == "POINT_LAMP":
+            data = bpy.data.lights.new(getPossibleLightName("instance lamp"), type = "POINT")
+        elif self.objectType.startswith("CURVE"):
+            data = bpy.data.curves.new(getPossibleCurveName("instance curve"), type = "CURVE")
+            data.dimensions = self.objectType[-2:]
+        elif self.objectType == "GREASE_PENCIL":
+            data = bpy.data.grease_pencils.new(getPossibleGreasePencilName("instance grease pencil"))
 
         if data is None:
             return None
-        else:
-            data.an_data.removeOnZeroUsers = True
-            return data
+        data.an_data.removeOnZeroUsers = True
+        return data
 
     def resetObjectDataOnAllInstances(self):
         self.resetInstances = True

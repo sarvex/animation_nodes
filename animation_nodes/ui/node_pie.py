@@ -38,9 +38,11 @@ class ContextPie(bpy.types.Menu, PieMenuHelper):
         col = layout.column(align = True)
         for socket in self.activeNode.outputs:
             if not socket.hide and isList(socket.bl_idname):
-                props = col.operator("an.insert_loop_for_iterator",
-                    text = "Loop through {}".format(repr(socket.getDisplayedName())),
-                    icon = "MOD_ARRAY")
+                props = col.operator(
+                    "an.insert_loop_for_iterator",
+                    text=f"Loop through {repr(socket.getDisplayedName())}",
+                    icon="MOD_ARRAY",
+                )
                 props.nodeIdentifier = self.activeNode.identifier
                 props.socketIndex = socket.getIndex()
 
@@ -49,8 +51,9 @@ class ContextPie(bpy.types.Menu, PieMenuHelper):
         return bpy.context.active_node
 
 def countUsableSockets(sockets):
-    counter = 0
-    for socket in sockets:
-        if not socket.hide and len(getAllowedInputDataTypes(socket.dataType)) > 0:
-            counter += 1
-    return counter
+    return sum(
+        1
+        for socket in sockets
+        if not socket.hide
+        and len(getAllowedInputDataTypes(socket.dataType)) > 0
+    )

@@ -16,9 +16,8 @@ class GetSelectedObjectsNode(AnimationNode, bpy.types.Node):
     def execute(self):
         if isRendering():
             return [], None
-        else:
-            viewLayer = getActiveDepsgraph().view_layer
-            return getSelectedObjects(viewLayer), getActiveObject(viewLayer)
+        viewLayer = getActiveDepsgraph().view_layer
+        return getSelectedObjects(viewLayer), getActiveObject(viewLayer)
 
     def draw(self, layout):
         layout.label(text = "Disabled During Rendering", icon = "INFO")

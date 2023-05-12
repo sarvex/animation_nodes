@@ -63,25 +63,24 @@ class LoopExecutionUnit:
 
     def iter_IterationsAmount(self, inputNode, nodes, variables, nodeByID):
         yield self.get_IterationsAmount_Header(inputNode, variables)
-        yield "    " + getGlobalizeStatement(nodes, variables)
+        yield f"    {getGlobalizeStatement(nodes, variables)}"
         yield from iterIndented(self.iter_InitializeGeneratorsLines(inputNode, variables, nodeByID))
         yield from iterIndented(self.iter_InitializeParametersLines(inputNode, variables))
         yield from iterIndented(self.iter_IterationsAmount_PrepareLoop(inputNode, variables))
         yield from iterIndented(self.iter_LoopBody(inputNode, nodes, variables, nodeByID), amount = 2)
         yield from iterIndented(self.iter_UpdateLoopViewerNodes(nodeByID))
-        yield "    " + self.get_ReturnStatement(inputNode, variables, nodeByID)
+        yield f"    {self.get_ReturnStatement(inputNode, variables, nodeByID)}"
 
     def get_IterationsAmount_Header(self, inputNode, variables):
         variables[inputNode.iterationsSocket] = "loop_iterations"
         parameterNames = ["loop_iterations"]
         for i, socket in enumerate(inputNode.getParameterSockets()):
             if socket.loop.useAsInput:
-                name = "loop_parameter_" + str(i)
+                name = f"loop_parameter_{str(i)}"
                 variables[socket] = name
                 parameterNames.append(name)
 
-        header = "def main({}):".format(", ".join(parameterNames))
-        return header
+        return f'def main({", ".join(parameterNames)}):'
 
     def iter_IterationsAmount_PrepareLoop(self, inputNode, variables):
         variables[inputNode.indexSocket] = "current_loop_index"
@@ -90,47 +89,46 @@ class LoopExecutionUnit:
 
     def iter_IteratorLength(self, inputNode, nodes, variables, nodeByID):
         yield self.get_IteratorLength_Header(inputNode, variables)
-        yield "    " + getGlobalizeStatement(nodes, variables)
+        yield f"    {getGlobalizeStatement(nodes, variables)}"
         yield from iterIndented(self.iter_InitializeGeneratorsLines(inputNode, variables, nodeByID))
         yield from iterIndented(self.iter_InitializeParametersLines(inputNode, variables))
         yield from iterIndented(self.iter_IteratorLength_PrepareLoopLines(inputNode, variables))
         yield from iterIndented(self.iter_LoopBody(inputNode, nodes, variables, nodeByID), amount = 2)
         yield from iterIndented(self.iter_UpdateLoopViewerNodes(nodeByID))
-        yield "    " + self.get_ReturnStatement(inputNode, variables, nodeByID)
+        yield f"    {self.get_ReturnStatement(inputNode, variables, nodeByID)}"
 
     def get_IteratorLength_Header(self, inputNode, variables):
         parameterNames = []
         for i, socket in enumerate(inputNode.getIteratorSockets()):
-            name = "loop_iterator_" + str(i)
+            name = f"loop_iterator_{str(i)}"
             parameterNames.append(name)
         for i, socket in enumerate(inputNode.getParameterSockets()):
             if socket.loop.useAsInput:
-                name = "loop_parameter_" + str(i)
+                name = f"loop_parameter_{str(i)}"
                 variables[socket] = name
                 parameterNames.append(name)
 
-        header = "def main({}):".format(", ".join(parameterNames))
-        return header
+        return f'def main({", ".join(parameterNames)}):'
 
     def iter_IteratorLength_PrepareLoopLines(self, inputNode, variables):
         iterators = inputNode.getIteratorSockets()
-        iteratorNames = ["loop_iterator_" + str(i) for i in range(len(iterators))]
+        iteratorNames = [f"loop_iterator_{str(i)}" for i in range(len(iterators))]
 
         if inputNode.iterationsSocket.isLinked:
-            yield "zipped_iterators = list(zip({}))".format(", ".join(iteratorNames))
+            yield f'zipped_iterators = list(zip({", ".join(iteratorNames)}))'
             yield "loop_iterations = len(zipped_iterators)"
         else:
             # loop_iterations doesn't have to be calculated
             #  -> no need to make a list of the zip object
-            yield "zipped_iterators = zip({})".format(", ".join(iteratorNames))
+            yield f'zipped_iterators = zip({", ".join(iteratorNames)})'
 
         names = []
         for i, socket in enumerate(iterators):
-            name = "loop_iterator_element_" + str(i)
+            name = f"loop_iterator_element_{str(i)}"
             variables[socket] = name
             names.append(name)
 
-        yield "for current_loop_index, ({}, ) in enumerate(zipped_iterators):".format(", ".join(names))
+        yield f'for current_loop_index, ({", ".join(names)}, ) in enumerate(zipped_iterators):'
 
         variables[inputNode.indexSocket] = "current_loop_index"
         variables[inputNode.iterationsSocket] = "loop_iterations"
@@ -138,14 +136,14 @@ class LoopExecutionUnit:
     def iter_UpdateLoopViewerNodes(self, nodeByID):
         for node in getNodesByType("an_LoopViewerNode", nodeByID):
             if self.network == node.network:
-                yield "{}.updateTextBlock()".format(node.identifier)
-                yield "{}.clearOutputLines()".format(node.identifier)
+                yield f"{node.identifier}.updateTextBlock()"
+                yield f"{node.identifier}.clearOutputLines()"
 
     def iter_InitializeGeneratorsLines(self, inputNode, variables, nodeByID):
         for i, node in enumerate(inputNode.getSortedGeneratorNodes(nodeByID)):
-            name = "loop_generator_output_" + str(i)
+            name = f"loop_generator_output_{str(i)}"
             variables[node] = name
-            yield "{} = AN.sockets.info.getDefaultValue({})".format(name, repr(node.listDataType))
+            yield f"{name} = AN.sockets.info.getDefaultValue({repr(node.listDataType)})"
             yield "{0}_{1} = {1}.{0}".format(node.generatorType, name)
 
     def iter_InitializeParametersLines(self, inputNode, variables):
@@ -171,17 +169,17 @@ class LoopExecutionUnit:
 
     def iter_LoopBreak(self, inputNode, variables, nodeByID):
         for node in inputNode.getBreakNodes(nodeByID):
-            yield "if not {}: break".format(variables[node.inputs[0]])
+            yield f"if not {variables[node.inputs[0]]}: break"
 
     def iter_AddToGenerators(self, inputNode, variables, nodeByID):
         for node in inputNode.getSortedGeneratorNodes(nodeByID):
             yield from iterNodeCommentLines(node)
-            yield "if {}:".format(variables[node.conditionSocket])
+            yield f"if {variables[node.conditionSocket]}:"
 
             socket = node.dataInputSocket
             if socket.isUnlinked and socket.isCopyable(): expression = getCopyExpression(socket, variables)
             else: expression = variables[socket]
-            yield "    {}_{}({})".format(node.generatorType, variables[node], expression)
+            yield f"    {node.generatorType}_{variables[node]}({expression})"
 
     def iter_ReassignParameters(self, inputNode, variables, nodeByID):
         for node in inputNode.getReassignParameterNodes(nodeByID):
@@ -193,22 +191,28 @@ class LoopExecutionUnit:
             else: expression = variables[socket]
 
             if node.conditionSocket is None: conditionPrefix = ""
-            else: conditionPrefix = "if {}: ".format(variables[node.conditionSocket])
+            else:else
+                conditionPrefix = f"if {variables[node.conditionSocket]}: "
 
-            yield "{}{} = {}".format(conditionPrefix, variables[node.linkedParameterSocket], expression)
+            yield f"{conditionPrefix}{variables[node.linkedParameterSocket]} = {expression}"
 
 
     def get_ReturnStatement(self, inputNode, variables, nodeByID):
-        names = []
-        names.extend(["loop_iterator_" + str(i) for i, socket in enumerate(inputNode.getIteratorSockets()) if socket.loop.useAsOutput])
+        names = [
+            f"loop_iterator_{str(i)}"
+            for i, socket in enumerate(inputNode.getIteratorSockets())
+            if socket.loop.useAsOutput
+        ]
         names.extend([variables[node] for node in inputNode.getSortedGeneratorNodes(nodeByID)])
         names.extend([variables[socket] for socket in inputNode.getParameterSockets() if socket.loop.useAsOutput])
-        return "return {}".format(", ".join(names))
+        return f'return {", ".join(names)}'
 
 
 
     def compileScript(self):
-        self.setupCodeObject = compileScript(self.setupScript, name = "group: {}".format(repr(self.network.name)))
+        self.setupCodeObject = compileScript(
+            self.setupScript, name=f"group: {repr(self.network.name)}"
+        )
 
 
     def raiseNotSetupException(self):

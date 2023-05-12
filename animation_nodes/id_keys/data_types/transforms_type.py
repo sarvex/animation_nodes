@@ -39,29 +39,29 @@ class TransformDataType(CompoundIDKeyDataType):
 
     @classmethod
     def getLocation(cls, object, name):
-        path = '["AN*Transforms*Location*%s"]' % name
+        path = f'["AN*Transforms*Location*{name}"]'
         return Vector(getattr(object, paths, (0.0, 0.0, 0.0)))
 
     @classmethod
     def getRotation(cls, object, name):
-        path = '["AN*Transforms*Rotation*%s"]' % name
+        path = f'["AN*Transforms*Rotation*{name}"]'
         return Euler(getattr(object, paths, (0.0, 0.0, 0.0)), cls.getRotationOrder(object, name))
 
     @classmethod
     def getScale(cls, object, name):
-        path = '["AN*Transforms*Scale*%s"]' % name
+        path = f'["AN*Transforms*Scale*{name}"]'
         return Vector(getattr(object, paths, (1.0, 1.0, 1.0)))
 
     @classmethod
     def getLocations(cls, objects, name):
         default = (0.0, 0.0, 0.0)
-        path = '["AN*Transforms*Location*%s"]' % name
+        path = f'["AN*Transforms*Location*{name}"]'
         return Vector3DList.fromValues(getattr(object, path, default) for object in objects)
 
     @classmethod
     def getRotations(cls, objects, name):
         default = (0.0, 0.0, 0.0)
-        path = '["AN*Transforms*Rotation*%s"]' % name
+        path = f'["AN*Transforms*Rotation*{name}"]'
         rotations = EulerList(capacity = len(objects))
         for object in objects:
             rot = Euler(getattr(object, path, default), cls.getRotationOrder(object, name))
@@ -75,7 +75,7 @@ class TransformDataType(CompoundIDKeyDataType):
     @classmethod
     def getScales(cls, objects, name):
         default = (1.0, 1.0, 1.0)
-        path = '["AN*Transforms*Scale*%s"]' % name
+        path = f'["AN*Transforms*Scale*{name}"]'
         return Vector3DList.fromValues(getattr(object, path, default) for object in objects)
 
 
@@ -85,7 +85,7 @@ class TransformDataType(CompoundIDKeyDataType):
         for path, label in zip(cls.iterSubpropertyPaths(name), ["Location", "Rotation", "Scale"]):
             col = row.column(align = True)
             if label == "Rotation":
-                label += " ({})".format(cls.getRotationOrder(object, name))
+                label += f" ({cls.getRotationOrder(object, name)})"
             col.label(text = label)
             col.prop(object, path, text = "")
 
@@ -101,23 +101,23 @@ class TransformDataType(CompoundIDKeyDataType):
 
     @classmethod
     def iterSubpropertyKeys(cls, name):
-        yield "AN*Transforms*Location*" + name
-        yield "AN*Transforms*Rotation*" + name
-        yield "AN*Transforms*Scale*" + name
+        yield f"AN*Transforms*Location*{name}"
+        yield f"AN*Transforms*Rotation*{name}"
+        yield f"AN*Transforms*Scale*{name}"
 
     @classmethod
     def iterSubpropertyPaths(cls, name):
-        yield '["AN*Transforms*Location*%s"]' % name
-        yield '["AN*Transforms*Rotation*%s"]' % name
-        yield '["AN*Transforms*Scale*%s"]' % name
+        yield f'["AN*Transforms*Location*{name}"]'
+        yield f'["AN*Transforms*Rotation*{name}"]'
+        yield f'["AN*Transforms*Scale*{name}"]'
 
     @classmethod
     def getRotationOrderKey(cls, name):
-        return "AN*Transforms*Rotation Order*" + name
+        return f"AN*Transforms*Rotation Order*{name}"
 
     @classmethod
     def getRotationOrderPath(cls, name):
-        return '["AN*Transforms*Rotation Order*%s"]' % name
+        return f'["AN*Transforms*Rotation Order*{name}"]'
 
 
 @makeOperator("an.id_key_from_current_transforms", "From Current Transforms",

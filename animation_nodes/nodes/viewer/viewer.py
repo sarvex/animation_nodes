@@ -95,7 +95,7 @@ class ViewerNode(AnimationNode, bpy.types.Node):
             endElements = self.iterListElements(data, length - endAmount, endAmount, indexWidth, toString)
             text = "\n".join(chain(startElements, ["..."], endElements))
 
-        listInfo = "{} - Length: {}".format(type(data).__name__, length)
+        listInfo = f"{type(data).__name__} - Length: {length}"
         self.setViewData(listInfo, text, minWidth)
 
         if self.outputTextBlock:
@@ -106,7 +106,7 @@ class ViewerNode(AnimationNode, bpy.types.Node):
         if length == 0:
             return
         for i, element in enumerate(data[start:start + length], start):
-            yield "{}: {}".format(str(i).rjust(indexWidth), toString(element))
+            yield f"{str(i).rjust(indexWidth)}: {toString(element)}"
 
     def setViewData(self, nodeText, drawText, minWidth = None):
         # Only set view data if it is different to avoid unnecessary updates,
@@ -118,9 +118,9 @@ class ViewerNode(AnimationNode, bpy.types.Node):
         if self.width != preferredWidth: self.width = preferredWidth
 
         if self.outputConsole:
-            print("Viewer: '{}'".format(self.name))
-            print("  " + nodeText)
-            print("\n".join("  " + line for line in drawText.splitlines()))
+            print(f"Viewer: '{self.name}'")
+            print(f"  {nodeText}")
+            print("\n".join(f"  {line}" for line in drawText.splitlines()))
 
     def setTextBlockData(self, text):
         textBlock = self.getTextBlock()
@@ -188,13 +188,13 @@ def handleNonList_Generic(data):
     if len(text) < 20 and "\n" not in text:
         return text, ""
     else:
-        return "Type: " + type(data).__name__, str(data)
+        return f"Type: {type(data).__name__}", str(data)
 
 def handleNonList_String(text):
     if len(text) < 20 and "\n" not in text:
         return text, ""
     else:
-        return "Text Length: " + str(len(text)), text
+        return f"Text Length: {len(text)}", text
 
 def handleNonList_Float(number):
     return str(round(number, 5)), ""
@@ -214,7 +214,7 @@ def handleNonList_Euler(euler):
         euler.order), "", 340
 
 def handleNonList_Matrix(matrix):
-    return "Type: {}x{} Matrix".format(len(matrix.row), len(matrix.col)), str(matrix), 330
+    return f"Type: {len(matrix.row)}x{len(matrix.col)} Matrix", str(matrix), 330
 
 
 # List Helpers

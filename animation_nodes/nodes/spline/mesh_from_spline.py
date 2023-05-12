@@ -41,10 +41,7 @@ class MeshFromSplineNode(AnimationNode, bpy.types.Node, SplineEvaluationBase):
         subcol.prop(self, "resolution")
 
     def getExecutionFunctionName(self):
-        if self.useCustomShape:
-            return "execute_CustomShape"
-        else:
-            return "execute_CircleShape"
+        return "execute_CustomShape" if self.useCustomShape else "execute_CircleShape"
 
     def execute_CircleShape(self, spline, size, splineResolution, bevelResolution, capEnds):
         size = max(size, 0)

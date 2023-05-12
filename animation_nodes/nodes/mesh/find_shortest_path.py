@@ -42,16 +42,15 @@ class FindShortestPathNode(AnimationNode, bpy.types.Node):
 
         if self.mode == "PATH":
             self.newOutput("Integer List", "Indices", "indices")
-        else:
-            if self.pathType == "MESH":
-                if not self.joinMeshes:
-                    self.newOutput("Mesh List", "Meshes", "outMeshes")
-                else:
-                    self.newOutput("Mesh", "Mesh", "outMesh")
-            elif self.pathType == "SPLINE":
-                self.newOutput("Spline List", "Splines", "outSplines")
-            elif self.pathType == "STROKE":
-                self.newOutput("GPStroke List", "Strokes", "outStrokes")
+        elif self.pathType == "MESH":
+            if self.joinMeshes:
+                self.newOutput("Mesh", "Mesh", "outMesh")
+            else:
+                self.newOutput("Mesh List", "Meshes", "outMeshes")
+        elif self.pathType == "SPLINE":
+            self.newOutput("Spline List", "Splines", "outSplines")
+        elif self.pathType == "STROKE":
+            self.newOutput("GPStroke List", "Strokes", "outStrokes")
 
     def draw(self, layout):
         layout.prop(self, "mode", text = "")
@@ -61,10 +60,7 @@ class FindShortestPathNode(AnimationNode, bpy.types.Node):
                 layout.prop(self, "joinMeshes")
 
     def getExecutionFunctionName(self):
-        if self.mode == "PATH":
-            return "execute_Path"
-        else:
-            return "execute_Tree"
+        return "execute_Path" if self.mode == "PATH" else "execute_Tree"
 
     def execute_Path(self, mesh, source, target):
         if mesh is None:
@@ -81,11 +77,7 @@ class FindShortestPathNode(AnimationNode, bpy.types.Node):
     def execute_Tree(self, mesh, sources):
         if not self.useSourceList: sources = LongList.fromValue(sources)
         if mesh is None or len(sources) == 0:
-            if self.joinMeshes and self.pathType == "MESH":
-                return Mesh()
-            else:
-                return []
-
+            return Mesh() if self.joinMeshes and self.pathType == "MESH" else []
         sourceMin = sources.getMinValue()
         sourceMax = sources.getMaxValue()
         if sourceMin < 0:

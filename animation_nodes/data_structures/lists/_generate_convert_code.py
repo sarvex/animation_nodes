@@ -25,11 +25,11 @@ def generate(target, utils):
     numericLists = utils.readJsonFile(paths["numericLists"])
     listNames = ", ".join(name for name, _ in numericLists)
 
-    parts = []
-    parts.append("from . base_lists cimport NumericList")
-    parts.append("from . base_lists cimport " + listNames)
-    parts.append("")
-
+    parts = [
+        "from . base_lists cimport NumericList",
+        f"from . base_lists cimport {listNames}",
+        "",
+    ]
     for listName, listType in numericLists:
         code = utils.multiReplace(source,
             TARGETLIST = listName,

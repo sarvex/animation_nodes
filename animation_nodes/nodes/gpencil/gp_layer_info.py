@@ -60,18 +60,12 @@ class GPLayerInfoNode(AnimationNode, bpy.types.Node):
     def getExecutionFunctionName(self):
         if self.frameType == "ACTIVE":
             return "execute_ActiveFrame"
-        elif self.frameType == "INDEX":
-            if self.useFrameList:
-                return "execute_FrameIndices"
-            else:
-                return "execute_FrameIndex"
-        elif self.frameType == "FRAME":
-            if self.useFrameList:
-                return "execute_FrameNumbers"
-            else:
-                return "execute_FrameNumber"
         elif self.frameType == "ALL":
             return "execute_AllFrames"
+        elif self.frameType == "FRAME":
+            return "execute_FrameNumbers" if self.useFrameList else "execute_FrameNumber"
+        elif self.frameType == "INDEX":
+            return "execute_FrameIndices" if self.useFrameList else "execute_FrameIndex"
 
     def execute_ActiveFrame(self, layer, scene):
         frames = layer.frames

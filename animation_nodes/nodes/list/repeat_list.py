@@ -72,10 +72,10 @@ class RepeatListNode(AnimationNode, bpy.types.Node):
         if self.repetitionType == "LOOP":
             yield "    _sourceList = inList"
         elif self.repetitionType == "PING_PONG":
-            yield "    _reversedList = AN.algorithms.lists.reverse('%s', inList)" % self.assignedType
+            yield f"    _reversedList = AN.algorithms.lists.reverse('{self.assignedType}', inList)"
             yield "    _sourceList = inList + _reversedList"
 
-        yield "    outList = AN.algorithms.lists.repeat('%s', _sourceList, outLength, self.makeElementCopies)" % self.assignedType
+        yield f"    outList = AN.algorithms.lists.repeat('{self.assignedType}', _sourceList, outLength, self.makeElementCopies)"
 
     def getUsedModules(self):
         return ["math"]

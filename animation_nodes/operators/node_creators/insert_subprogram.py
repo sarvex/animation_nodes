@@ -28,8 +28,7 @@ class InsertEmptySubprogram(bpy.types.Operator, NodeCreator):
         if self.subprogramType == "SCRIPT":
             identifier = self.insertScript()
 
-        targetNode = self.nodeByIdentifier(self.targetNodeIdentifier)
-        if targetNode:
+        if targetNode := self.nodeByIdentifier(self.targetNodeIdentifier):
             targetNode.subprogramIdentifier = identifier
         subprogramInterfaceChanged()
 

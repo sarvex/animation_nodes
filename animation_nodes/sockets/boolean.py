@@ -47,9 +47,8 @@ class BooleanSocket(bpy.types.NodeSocket, AnimationNodeSocket):
     def correctValue(cls, value):
         if isinstance(value, bool):
             return value, 0
-        else:
-            try: return bool(value), 1
-            except: return cls.getDefaultValue(), 2
+        try: return bool(value), 1
+        except: return cls.getDefaultValue(), 2
 
 registerImplicitConversion("Float", "Boolean", "bool(value)")
 registerImplicitConversion("Integer", "Boolean", "bool(value)")

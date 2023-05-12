@@ -10,5 +10,4 @@ class TextBlockReaderNode(AnimationNode, bpy.types.Node):
         self.newOutput("Text", "Text", "text")
 
     def execute(self, textBlock):
-        if textBlock is None: return ""
-        else: return textBlock.as_string()
+        return "" if textBlock is None else textBlock.as_string()

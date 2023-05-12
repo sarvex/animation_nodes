@@ -15,8 +15,7 @@ class TreePanel(bpy.types.Panel):
     @classmethod
     def poll(cls, context):
         tree = cls.getTree()
-        if tree is None: return False
-        return tree.bl_idname == "an_AnimationNodeTree"
+        return False if tree is None else tree.bl_idname == "an_AnimationNodeTree"
 
     def draw(self, context):
         tree = self.getTree()

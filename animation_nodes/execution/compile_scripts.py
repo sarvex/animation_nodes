@@ -23,7 +23,7 @@ def compileScript(script, name = "<string>"):
 
         print("\n"*5)
         for i, line in enumerate(lines):
-            linePrefix = str(i + 1).rjust(lineNumberWidth) + ". "
+            linePrefix = f"{str(i + 1).rjust(lineNumberWidth)}. "
             linesSuffix = "        <-------------- Error happens here" if lineNumber == i + 1 else ""
             print(linePrefix + line + linesSuffix)
         print("\n"*5)

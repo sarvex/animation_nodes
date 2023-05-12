@@ -26,11 +26,11 @@ class ParseNumberNode(AnimationNode, bpy.types.Node):
             yield "    self.parsingSuccessfull = True"
             yield "except:"
             yield "    numbers = DoubleList()"
-            yield "    self.parsingSuccessfull = False"
         else:
             yield "try:"
             yield "    number = float(text)"
             yield "    self.parsingSuccessfull = True"
             yield "except:"
             yield "    number = 0"
-            yield "    self.parsingSuccessfull = False"
+
+        yield "    self.parsingSuccessfull = False"

@@ -20,9 +20,7 @@ class GPFrameSocket(bpy.types.NodeSocket, AnimationNodeSocket):
 
     @classmethod
     def correctValue(cls, value):
-        if isinstance(value, GPFrame):
-            return value, 0
-        return cls.getDefaultValue(), 2
+        return (value, 0) if isinstance(value, GPFrame) else (cls.getDefaultValue(), 2)
 
 
 class GPFrameListSocket(bpy.types.NodeSocket, PythonListSocket):
@@ -40,7 +38,8 @@ class GPFrameListSocket(bpy.types.NodeSocket, PythonListSocket):
 
     @classmethod
     def correctValue(cls, value):
-        if isinstance(value, list):
-            if all(isinstance(element, GPFrame) for element in value):
-                return value, 0
+        if isinstance(value, list) and all(
+            isinstance(element, GPFrame) for element in value
+        ):
+            return value, 0
         return cls.getDefaultValue(), 2

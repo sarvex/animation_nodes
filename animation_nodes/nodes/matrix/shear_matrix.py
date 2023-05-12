@@ -33,7 +33,7 @@ class ShearMatrixNode(AnimationNode, bpy.types.Node):
         yield "limit = math.pi / 2 - 0.00001"
         yield "_angleA = math.tan(min(max(angleA, -limit), limit))"
         yield "_angleB = math.tan(min(max(angleB, -limit), limit))"
-        yield "matrix = Matrix.Shear('{}', 4, (_angleA, _angleB))".format(self.plane)
+        yield f"matrix = Matrix.Shear('{self.plane}', 4, (_angleA, _angleB))"
 
     def getUsedModules(self):
         return ["math"]

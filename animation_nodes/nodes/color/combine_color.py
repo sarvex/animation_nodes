@@ -65,7 +65,7 @@ class CombineColorNode(AnimationNode, bpy.types.Node):
         layout.label(text = "Uses linear color space", icon = "INFO")
 
     def drawLabel(self):
-        return "Color from {}A".format(self.sourceType)
+        return f"Color from {self.sourceType}A"
 
     def getExecutionCode(self, required):
         if any((self.useListR, self.useListG, self.useListB, self.useListA)):
@@ -73,11 +73,10 @@ class CombineColorNode(AnimationNode, bpy.types.Node):
             elif self.sourceType == "HSV": yield "colors = self.createColorList(h, s, v, a)"
             elif self.sourceType == "HSL": yield "colors = self.createColorList(h, s, l, a)"
             elif self.sourceType == "YIQ": yield "colors = self.createColorList(y, i, q, a)"
-        else:
-            if self.sourceType == "RGB":    yield "color = Color((r, g, b, a))"
-            elif self.sourceType == "HSV":  yield "color = Color((*colorsys.hsv_to_rgb(h, s, v), a))"
-            elif self.sourceType == "HSL":  yield "color = Color((*colorsys.hls_to_rgb(h, l, s), a))"
-            elif self.sourceType == "YIQ":  yield "color = Color((*colorsys.yiq_to_rgb(y, i, q), a))"
+        elif self.sourceType == "RGB":    yield "color = Color((r, g, b, a))"
+        elif self.sourceType == "HSV":  yield "color = Color((*colorsys.hsv_to_rgb(h, s, v), a))"
+        elif self.sourceType == "HSL":  yield "color = Color((*colorsys.hls_to_rgb(h, l, s), a))"
+        elif self.sourceType == "YIQ":  yield "color = Color((*colorsys.yiq_to_rgb(y, i, q), a))"
 
     def createColorList(self, r, g, b, a):
         r, g, b, a = VirtualDoubleList.createMultiple((r, 0), (g, 0), (b, 0), (a, 0))

@@ -27,7 +27,9 @@ class ConvertNode(AnimationNode, bpy.types.Node):
 
     def draw(self, layout):
         row = layout.row(align = True)
-        self.invokeSelector(row, "DATA_TYPE", "assignOutputType", text = "to " + self.dataType)
+        self.invokeSelector(
+            row, "DATA_TYPE", "assignOutputType", text=f"to {self.dataType}"
+        )
         icon = "LOCKED" if self.fixedOutputDataType else "UNLOCKED"
         row.prop(self, "fixedOutputDataType", icon = icon, text = "")
 

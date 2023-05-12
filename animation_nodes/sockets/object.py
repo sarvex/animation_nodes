@@ -23,11 +23,10 @@ class ObjectSocket(bpy.types.NodeSocket, AnimationNodeSocket):
         if self.objectCreationType != "":
             self.invokeFunction(row, node, "createObject", icon = "PLUS")
 
-        if self.showHideToggle:
-            if self.object is not None:
-                icon = "RESTRICT_VIEW_ON" if self.object.hide_viewport else "RESTRICT_VIEW_OFF"
-                self.invokeFunction(row, node, "toggleObjectVisibilty", icon = icon,
-                    description = "Toggle viewport and render visibility")
+        if self.showHideToggle and self.object is not None:
+            icon = "RESTRICT_VIEW_ON" if self.object.hide_viewport else "RESTRICT_VIEW_OFF"
+            self.invokeFunction(row, node, "toggleObjectVisibilty", icon = icon,
+                description = "Toggle viewport and render visibility")
 
         self.invokeFunction(row, node, "handleEyedropperButton", icon = "EYEDROPPER", passEvent = True,
             description = "Assign active object to this socket (hold CTRL to open a rename object dialog)")
@@ -48,19 +47,19 @@ class ObjectSocket(bpy.types.NodeSocket, AnimationNodeSocket):
                     oldName = self.object.name,
                     path = "bpy.data.objects",
                     icon = "OBJECT_DATA")
-        else:
-            object = bpy.context.active_object
-            if object: self.object = object
+        elif object := bpy.context.active_object:
+            self.object = object
 
     def createObject(self):
         type = self.objectCreationType
-        if type == "MESH": data = bpy.data.meshes.new("Mesh")
         if type == "CURVE":
             data = bpy.data.curves.new("Curve", "CURVE")
             data.dimensions = "3D"
             data.fill_mode = "FULL"
-        if type == "GPENCIL":
+        elif type == "GPENCIL":
             data = bpy.data.grease_pencils.new("ANGPencil")
+        elif type == "MESH":
+            data = bpy.data.meshes.new("Mesh")
         object = bpy.data.objects.new("Target", data)
         bpy.context.collection.objects.link(object)
         self.object = object
@@ -96,7 +95,8 @@ class ObjectListSocket(bpy.types.NodeSocket, PythonListSocket):
 
     @classmethod
     def correctValue(cls, value):
-        if isinstance(value, list):
-            if all(isinstance(element, Object) or element is None for element in value):
-                return value, 0
+        if isinstance(value, list) and all(
+            isinstance(element, Object) or element is None for element in value
+        ):
+            return value, 0
         return cls.getDefaultValue(), 2

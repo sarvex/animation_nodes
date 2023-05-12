@@ -44,9 +44,8 @@ class QuaternionSocket(bpy.types.NodeSocket, AnimationNodeSocket):
     def correctValue(cls, value):
         if isinstance(value, Quaternion):
             return value, 0
-        else:
-            try: return Quaternion(value), 1
-            except: return cls.getDefaultValue(), 2
+        try: return Quaternion(value), 1
+        except: return cls.getDefaultValue(), 2
 
 
 class QuaternionListSocket(bpy.types.NodeSocket, CListSocket):

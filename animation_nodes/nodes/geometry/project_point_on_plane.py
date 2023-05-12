@@ -41,10 +41,7 @@ class ProjectPointOnPlaneNode(AnimationNode, bpy.types.Node):
     def getExecutionFunctionName(self):
         useList = any((self.usePlanePointList, self.usePlaneNormalList,
                        self.usePointList))
-        if useList:
-            return "execute_List"
-        else:
-            return "execute_Single"
+        return "execute_List" if useList else "execute_Single"
 
     def execute_List(self, planePoints, planeNormals, points):
         planePoints = VirtualVector3DList.create(planePoints, Vector((0, 0, 0)))

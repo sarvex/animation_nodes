@@ -25,16 +25,19 @@ class DelayTimeNode(AnimationNode, bpy.types.Node):
     def drawLabel(self):
         if self.useListB: return "Delay Time"
         delaySocket = self.inputs["Delay"]
-        if delaySocket.isUnlinked:
-            value = delaySocket.value
-            if value == int(value): return "Delay " + str(int(value)) + " Frames"
-            else: return "Delay " + str(round(value, 2)) + " Frames"
-        else: return "Delay Time"
+        if not delaySocket.isUnlinked:
+            return "Delay Time"
+        value = delaySocket.value
+        return (
+            f"Delay {int(value)} Frames"
+            if value == int(value)
+            else f"Delay {str(round(value, 2))} Frames"
+        )
 
     def getExecutionCode(self, required):
         if self.useListA or self.useListB:
             args = ", ".join(socket.identifier for socket in self.inputs)
-            return "outTimes = self.executeList({})".format(args)
+            return f"outTimes = self.executeList({args})"
         else:
             return "outTime = time - delay"
 

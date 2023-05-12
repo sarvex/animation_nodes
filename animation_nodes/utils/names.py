@@ -5,7 +5,7 @@ import keyword
 from functools import lru_cache
 
 def toDataPath(name):
-    return '["{}"]'.format(name)
+    return f'["{name}"]'
 
 def getPossibleObjectName(name = "object"):
     return getPossibleName(bpy.data.objects, name)
@@ -48,8 +48,8 @@ def getRandomString(length):
 
 @lru_cache(maxsize = 2**15)
 def replaceVariableName(code, oldName, newName):
-    pattern = r"([^\.\"']|^)\b{}\b".format(oldName)
-    return re.sub(pattern, r"\1{}".format(newName), code)
+    pattern = f"""([^\.\"']|^)\b{oldName}\b"""
+    return re.sub(pattern, f"\1{newName}", code)
 
 def toVariableName(name):
     variable = re.sub("\W+", "", name)
@@ -68,11 +68,11 @@ def toInterfaceName(sourceName):
         if lastChar == " ":
             tempName += char.upper()
         elif lastChar.isalpha() and char.isnumeric():
-            tempName += " " + char.upper()
+            tempName += f" {char.upper()}"
         elif lastChar.isnumeric() and char.isalpha():
-            tempName += " " + char.upper()
+            tempName += f" {char.upper()}"
         elif lastChar.islower() and char.isupper():
-            tempName += " " + char.upper()
+            tempName += f" {char.upper()}"
         elif char == "_":
             tempName += " "
         else:
@@ -84,6 +84,6 @@ def toInterfaceName(sourceName):
     for word in words:
         if word.lower() in bindingWords:
             word = word.lower()
-        newName += " " + word
+        newName += f" {word}"
 
     return newName

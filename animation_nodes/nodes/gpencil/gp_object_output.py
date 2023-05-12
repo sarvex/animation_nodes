@@ -26,10 +26,7 @@ class GPObjectOutputNode(AnimationNode, bpy.types.Node):
         row.prop(self, "appendLayers")
 
     def getExecutionFunctionName(self):
-        if self.useLayerList:
-            return "execute_LayerList"
-        else:
-            return "execute_Layer"
+        return "execute_LayerList" if self.useLayerList else "execute_Layer"
 
     def execute_Layer(self, object, layer):
         if object is None: return None

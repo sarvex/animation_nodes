@@ -50,8 +50,8 @@ class DirectionToRotationNode(AnimationNode, bpy.types.Node):
         generateList = self.useDirectionList or self.useGuideList
 
         if generateList:
-            yield "_directions = " + self.inputs[0].identifier
-            yield "_guides = " + self.inputs[1].identifier
+            yield f"_directions = {self.inputs[0].identifier}"
+            yield f"_guides = {self.inputs[1].identifier}"
             yield "matrixRotations = AN.algorithms.rotations.directionsToMatrices(_directions, _guides, self.trackAxis, self.guideAxis)"
             if "eulerRotations" in required: yield "eulerRotations = matrixRotations.toEulers(isNormalized = True)"
             if "quaternionRotations" in required: yield "quaternionRotations = matrixRotations.toQuaternions(isNormalized = True)"

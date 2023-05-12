@@ -49,10 +49,7 @@ class IntersectPlanePlaneNode(AnimationNode, bpy.types.Node):
     def getExecutionFunctionName(self):
         useList = any((self.useFirstPlanePointList, self.useFirstPlaneNormalList,
                        self.useSecondPlanePointList, self.useSecondPlaneNormalList))
-        if useList:
-            return "execute_List"
-        else:
-            return "execute_Single"
+        return "execute_List" if useList else "execute_Single"
 
     def execute_List(self, firstPlanePoints, firstPlaneNormals,
                            secondPlanePoints, secondPlaneNormals):

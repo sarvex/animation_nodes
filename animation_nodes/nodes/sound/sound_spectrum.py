@@ -142,12 +142,15 @@ class SoundSpectrumNode(AnimationNode, bpy.types.Node):
 
 def isValidRange(low, high):
     if low >= high: return False
-    if low < 0 or low > 1: return False
-    if high < 0 or high > 1: return False
-    return True
+    return False if low < 0 or low > 1 else high >= 0 and high <= 1
 
 def isValidCustomList(pins):
     if len(pins) < 3: return False
-    for i in range(len(pins) - 1):
-        if not isValidRange(pins[i], pins[i + 1]): return False
-    return pins[-1] >= 0 and pins[-1] <= 1
+    return next(
+        (
+            False
+            for i in range(len(pins) - 1)
+            if not isValidRange(pins[i], pins[i + 1])
+        ),
+        pins[-1] >= 0 and pins[-1] <= 1,
+    )

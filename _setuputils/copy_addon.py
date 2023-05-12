@@ -18,4 +18,4 @@ def execute_CopyAddon(addonDirectory, targetPath, addonName):
         print("Created:", os.path.relpath(path, targetPath))
 
     totalChanged = sum(len(l) for l in changes.values())
-    print("\nModified {} files.".format(totalChanged))
+    print(f"\nModified {totalChanged} files.")

@@ -25,13 +25,13 @@ class SetPolygonMaterialIndexNode(AnimationNode, bpy.types.Node):
         if object.mode != "OBJECT":
             self.raiseErrorMessage("Object is not in object mode.")
 
-        if self.useMaterialIndexList:
-            if materialIndices.containsValueLowerThan(0):
-                self.raiseErrorMessage("Material index can't be negative.")
-        else:
-            if materialIndices < 0:
-                self.raiseErrorMessage("Material index can't be negative.")
-
+        if (
+            self.useMaterialIndexList
+            and materialIndices.containsValueLowerThan(0)
+            or not self.useMaterialIndexList
+            and materialIndices < 0
+        ):
+            self.raiseErrorMessage("Material index can't be negative.")
         polygons = object.data.polygons
         materialIndices = VirtualLongList.create(materialIndices, 0).materialize(len(polygons))
 

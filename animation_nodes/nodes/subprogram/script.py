@@ -63,11 +63,8 @@ class ScriptNode(AnimationNode, bpy.types.Node, SubprogramBaseNode):
         subcol.scale_y = 1.4
         subcol.active = self.textBlock is not None
 
-        icon = "NONE"
         text = self.textInTextBlock
-        if text is not None:
-            if self.executionCode != text: icon = "ERROR"
-
+        icon = "ERROR" if text is not None and self.executionCode != text else "NONE"
         if not self.interactiveMode:
             self.invokeFunction(subcol, "readFromTextBlock", text = "Import Changes", icon = icon,
                 description = "Import the changes from the selected text block")
@@ -86,15 +83,22 @@ class ScriptNode(AnimationNode, bpy.types.Node, SubprogramBaseNode):
         col = layout.column(align = True)
         for socket in self.outputs[:-1]:
             variableName = socket.text
-            if self.initializeMissingOutputs:
-                if not getattr(socket, '["variableInitialized"]', True):
-                    col.label(text = "'{}' - Not Initialized, used default".format(variableName), icon = "ERROR")
+            if self.initializeMissingOutputs and not getattr(
+                socket, '["variableInitialized"]', True
+            ):
+                col.label(
+                    text=f"'{variableName}' - Not Initialized, used default",
+                    icon="ERROR",
+                )
             if self.correctOutputTypes:
                 correctionType = getattr(socket, '["correctionType"]', 0)
                 if correctionType == 1 and not onlyErrors:
-                    col.label(text = "'{}' - Type Corrected".format(variableName), icon = "INFO")
+                    col.label(text=f"'{variableName}' - Type Corrected", icon = "INFO")
                 elif correctionType == 2:
-                    col.label(text = "'{}' - Wrong Type, expected '{}'".format(variableName, socket.dataType), icon = "ERROR")
+                    col.label(
+                        text=f"'{variableName}' - Wrong Type, expected '{socket.dataType}'",
+                        icon="ERROR",
+                    )
 
     def drawAdvanced(self, layout):
         col = layout.column()
@@ -208,9 +212,7 @@ class ScriptNode(AnimationNode, bpy.types.Node, SubprogramBaseNode):
 
     @property
     def textInTextBlock(self):
-        if self.textBlock:
-            return self.textBlock.as_string()
-        return None
+        return self.textBlock.as_string() if self.textBlock else None
 
     @property
     def textBlock(self):
